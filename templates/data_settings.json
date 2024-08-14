@@ -1,0 +1,19 @@
+{
+    "experiment_type": "exp1",
+    "modi": [
+        "total"
+    ],
+    "data_folder": ".",
+    "output_names": null,
+    "include_input_features": null,
+    "exclude_input_features": null,
+    "mode": "regression",
+    "metric": "mae",
+    "normalization": "none",
+    "batchsize": "[ 8 ]",
+    "output_folder": "../../outputs/exp1/",
+    "num_total": null,
+    "delimiter": ",",
+    "augmented_features": null,
+    "verbose": false
+}

@@ -1,0 +1,22 @@
+{
+    "dtype": null,
+    "do_one_hot_encoding": true,
+    "valid_frac": 0.1,
+    "test_frac": 0.2,
+    "procs": null,
+    "ds_for_model_selection": "valid",
+    "max_epochs": 150,
+    "patience": 30,
+    "perform_new_grid_search": false,
+    "mlp_hidden_layers": "[ [1024, 256, 256, 128, 128, 64, 64, 64, 32, 32, 32] ]",
+    "mlp_dropout": "[ 0.0 ]",
+    "resnet_dropout": "[ 0.0 ]",
+    "resnet_layersizes": "[ 128 ]",
+    "resnet_blocks": "[ 3 ]",
+    "rf_max_depth": 6,
+    "rf_n_estimators": 100,
+    "xgb_max_depth": 6,
+    "xgb_n_estimators": 100,
+    "num_samples": 256,
+    "num_top_features": -1
+}
