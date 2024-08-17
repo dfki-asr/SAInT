@@ -5,13 +5,17 @@ class DashDiv(DashComponent):
                  content,
                  width: str = None,
                  margin: str = None,
-                 visible: bool = True):
+                 visible: bool = True,
+                 inline: bool = False,
+                 gap: str = None):
         super().__init__(id=id)
         self.content = content
         self.fontsize = "25px"
         self.width = width
         self.margin = margin
         self.visible = visible
+        self.inline = inline
+        self.gap = gap
 
     def to_html(self):
         content = [item.to_html() for item in self.content]
@@ -24,6 +28,13 @@ class DashDiv(DashComponent):
             style["font-size"] = self.fontsize
         if self.visible is False:
             style["display"] = "none"
+        elif self.inline:  # Apply flexbox if inline is True
+            style["display"] = "flex"
+            style["flex-direction"] = "row"
+            if self.gap is not None:  # Add gap if specified
+                style["gap"] = self.gap
+        else:
+            style["display"] = "block"  # Default to block display
         style = style if len(style) > 0 else None
         return html.Div(
             content,
