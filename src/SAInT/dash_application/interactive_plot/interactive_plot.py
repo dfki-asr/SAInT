@@ -147,7 +147,7 @@ class InteractivePlot:
         max_y = max(max_y, y.max()) if max_y is not None else y.max()
         return min_x, max_x, min_y, max_y
 
-    def _get_scatter_function(self, max_num_points: int = 5000):
+    def _get_scatter_function(self, max_num_points: int = 50000):
         """Choose scatter function according to the number of points to draw"""
         def count_points(values_dict):
             return sum(len(l) for values in values_dict.values() for l in values if isinstance(values, list))
