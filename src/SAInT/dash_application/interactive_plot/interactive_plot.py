@@ -24,12 +24,14 @@ class InteractivePlot:
         self.feature_values = {}
         self.y_values = {}
         self.pred_values = {}
+        self.original_indices_sorted_values = {}
 
     def reset_data(self):
         """Reset plot data and internal storage."""
         self.feature_values = {}
         self.y_values = {}
         self.pred_values = {}
+        self.original_indices_sorted_values = {}
 
     def _create_marker_options(self, color, symbol, size=10, line_color='DarkSlateGrey'):
         """Create marker options for scatter plot."""
@@ -68,7 +70,9 @@ class InteractivePlot:
         figure.update_layout(legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1))
 
     def _sort_values(self, pred, y, features, sort_idx):
-        """Sort values based on the sorting criterion."""
+        """Sort values based on the sorting criterion, while keeping track of the original indices."""
+        # Store the original indices before sorting
+        original_indices = np.arange(len(y))
         if sort_idx == 1:
             sorting_indices = np.argsort(y.values)
         elif sort_idx == 0:
@@ -76,13 +80,16 @@ class InteractivePlot:
                 raise RuntimeError("Cannot sort by prediction (no models available!)")
             sorting_indices = np.argsort(pred)
         else:
-            return pred, y, features
+            return pred, y, features, original_indices
 
+        # Apply the sorting to the original indices
+        original_indices_sorted = original_indices[sorting_indices]
+        # Sort the y, features, and pred using the sorting indices
         y_sorted = y.iloc[sorting_indices]
         features_sorted = pd.DataFrame(features).iloc[sorting_indices]
         pred_sorted = pred[sorting_indices] if pred is not None else None
 
-        return pred_sorted, y_sorted, features_sorted
+        return pred_sorted, y_sorted, features_sorted, original_indices_sorted
 
     def _create_default_figure(self, height):
         """Create a default empty scatter plot."""
@@ -106,15 +113,17 @@ class InteractivePlot:
             return np.array(pred).reshape(-1, len(output_names))[:, row]
         return pred
 
-    def _update_internal_data(self, ds_name, y, features, pred=None):
+    def _update_internal_data(self, ds_name, y, features, original_indices_sorted, pred=None):
         """Update internal data storage."""
         if ds_name not in self.y_values:
             self.y_values[ds_name] = []
             self.feature_values[ds_name] = []
             self.pred_values[ds_name] = []
+            self.original_indices_sorted_values[ds_name] = []
 
         self.y_values[ds_name].append(y)
         self.feature_values[ds_name].append(features)
+        self.original_indices_sorted_values[ds_name].append(original_indices_sorted)
         if pred is not None:
             self.pred_values[ds_name].append(pred)
 
@@ -205,14 +214,14 @@ class InteractivePlot:
             pred = preds[ds_name]
 
             if pred is None:
-                pred_vals, y_vals, feature_vals = self._sort_values(None, y_vals, feature_vals, sort_idx)
-                self._update_internal_data(ds_name, y_vals, feature_vals)
+                pred_vals, y_vals, feature_vals, original_indices_sorted = self._sort_values(None, y_vals, feature_vals, sort_idx)
+                self._update_internal_data(ds_name, y_vals, feature_vals, original_indices_sorted)
                 if self.sort_criterion == "by prediction":
                     raise RuntimeError("Cannot sort 'by prediction', since no prediction is given!")
             else:
                 pred_vals = self._process_predictions(pred, output_names, row)
                 if not self.goodness_of_fit:
-                    pred_vals, y_vals, feature_vals = self._sort_values(pred_vals, y_vals, feature_vals, sort_idx)
+                    pred_vals, y_vals, feature_vals, original_indices_sorted = self._sort_values(pred_vals, y_vals, feature_vals, sort_idx)
                     marker_options = self._create_marker_options(color=marker_colors_prediction[idx],
                                                                  symbol=marker_symbols_prediction[idx], size=marker_size)
                     scatter_data = self._create_scatter(ds_name=ds_name, name=f"{ds_name} prediction", x=x_vals, y=pred_vals,
@@ -221,7 +230,7 @@ class InteractivePlot:
                                                         marker_options=marker_options, showlegend=showlegend)
                     traces.append(scatter_data)
 
-                self._update_internal_data(ds_name, y_vals, feature_vals, pred_vals)
+                self._update_internal_data(ds_name, y_vals, feature_vals, original_indices_sorted, pred_vals)
 
             if self.goodness_of_fit and pred is not None:
                 scatter_data = self._create_goodness_of_fit_scatter(ds_name,
@@ -347,17 +356,21 @@ class InteractivePlot:
         feature_vals = self.feature_values.get(ds_name, [])[output_idx]
         y_vals = self.y_values.get(ds_name, [])[output_idx]
         pred_vals = self.pred_values.get(ds_name, [])[output_idx] if self.pred_values.get(ds_name, []) else None
+        original_indices_sorted_vals = self.original_indices_sorted_values.get(ds_name, [])[output_idx] if self.original_indices_sorted_values.get(ds_name, []) else None
 
         x_val = feature_vals.iloc[sorted_idx] if feature_vals is not None else None
         y_val = y_vals.iloc[sorted_idx] if y_vals is not None else None
         pred_val = pred_vals[sorted_idx] if pred_vals is not None else None
+        original_indices_sorted_val = original_indices_sorted_vals[sorted_idx] if original_indices_sorted_vals is not None else None
 
         return {
             "output_idx": output_idx,
             "output_name": output_name,
+            "ds_name": ds_name,
             "dls_train": dls_train,
             "train_data": np.array(dls_train.xs.values, dtype=np.float32),
             "sorted_idx": sorted_idx,
+            "original_idx": original_indices_sorted_val,
             "x": x_val,
             "y": y_val,
             "p": pred_val
