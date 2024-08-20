@@ -26,7 +26,7 @@ classification_functions_dict = get_ordered_functions_dict(classification)
 metric_functions_dict = regression_functions_dict | classification_functions_dict
 
 def get_metric(metric_name="mae", args: dict = None):
-    if metric_name not in total_dict.keys():
+    if metric_name not in metric_functions_dict.keys():
         raise RuntimeError(f"Unknown metric {metric_name}!")
     return metric_functions_dict[metric_name]
 
