@@ -220,8 +220,8 @@ class InteractivePlot:
                     raise RuntimeError("Cannot sort 'by prediction', since no prediction is given!")
             else:
                 pred_vals = self._process_predictions(pred, output_names, row)
+                pred_vals, y_vals, feature_vals, original_indices_sorted = self._sort_values(pred_vals, y_vals, feature_vals, sort_idx)
                 if not self.goodness_of_fit:
-                    pred_vals, y_vals, feature_vals, original_indices_sorted = self._sort_values(pred_vals, y_vals, feature_vals, sort_idx)
                     marker_options = self._create_marker_options(color=marker_colors_prediction[idx],
                                                                  symbol=marker_symbols_prediction[idx], size=marker_size)
                     scatter_data = self._create_scatter(ds_name=ds_name, name=f"{ds_name} prediction", x=x_vals, y=pred_vals,
