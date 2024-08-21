@@ -10,7 +10,7 @@ def run_setup():
           author="Manuela Schuler",
           author_email="Manuela.Schuler@dfki.de",
           packages=packages,
-          python_requires=">=3.12.0",
+          python_requires=">=3.8",
           install_requires=[
               "numpy==1.26.4",
               "torch==2.2.0",
