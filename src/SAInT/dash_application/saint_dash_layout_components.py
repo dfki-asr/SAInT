@@ -106,7 +106,7 @@ def create_model_selection_panel(default_selected_dataset):
                                  data_radio_buttons,
                                  loss_radio_buttons
                                  ],
-                    item_widths=[2, 3, 3], id="auto_selection_panel")
+                    item_widths=[2, 3, 7], id="auto_selection_panel")
 
 def create_tabs(console, graph,
                 settings_panel, model_selection_panel,
