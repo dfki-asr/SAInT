@@ -91,11 +91,14 @@ class DashLocalExplainer:
         y_value = sample_dict["y"]
         p_value = sample_dict["p"]
         body = [
-            html.H3(sample_dict['output_name']),
-            html.P(f"groundtruth: {y_value:.5f}")
+            html.H3(sample_dict['output_name'])
         ]
+        gt_pred_mae_text = f"groundtruth: {y_value:.5f}"
         if p_value is not None:
-            body.extend(self._generate_prediction_info(y_value, p_value))
+            gt_pred_mae_text += self._generate_prediction_info(y_value, p_value)
+        body.extend([html.P(gt_pred_mae_text)])
+
+        if p_value is not None:
             if self._should_explain_lime():
                 body.append(self._generate_lime_info(sample_dict))
             if self._should_explain_shap():
@@ -118,10 +121,7 @@ class DashLocalExplainer:
         """
         mae_err = abs(y_value - p_value)
         mae_err_percent = f"({(mae_err / y_value) * 100.0:.2f}%)" if y_value != 0.0 else ""
-        return [
-            html.P(f"prediction: {p_value:.5f}"),
-            html.P(f"MAE:  {mae_err:.5f} {mae_err_percent}")
-        ]
+        return f",   prediction: {p_value:.5f},   MAE: {mae_err:.5f} {mae_err_percent}"
 
     def _should_explain_lime(self):
         """
