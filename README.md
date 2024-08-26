@@ -20,6 +20,10 @@ We introduce SAInT, an Interactive Tool for Sensitivity Analysis in The Loop, wh
 SAInT integrates Interactive Machine Learning (a-e) and Sensitivity Analysis (f-h) in a loop with user interactions. a) Feature Selection: Define in- and output features. b) Model Configuration: Configure model parameters. c) Model Training: Train or load models. d) Criteria Selection: Select dataset and loss. e) Evaluation: Error plot of all models. f) Interactive Plot: Click onto a sample. g) Local Sensitivity Analysis: Local explanations for the selected sample. h) Global Sensitivity Analysis: Identify the best features, which can be used in a) as refinement.
 </p>
 
+## Video
+
+[![Watch the video](https://img.youtube.com/vi/m269sWdYUUI/maxresdefault.jpg)](https://www.youtube.com/watch?v=m269sWdYUUI)
+
 If you use our tool, please cite us.
 
 ## Installation
