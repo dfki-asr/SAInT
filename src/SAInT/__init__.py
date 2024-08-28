@@ -15,6 +15,7 @@ from SAInT.metric import get_metric
 from SAInT.model import Model
 from SAInT.trainer import Trainer
 from SAInT.data_visualizer import DataVisualizer
+from SAInT.dash_application.saint_dash_app import MySAInTDashApplication
 
 
 __all__ = [
@@ -29,5 +30,5 @@ __all__ = [
     "MeanStdNormalizer", "MinMaxNormalizer",
     "OnlineDataAugmentation", "OnlineMeanStdNormalization",
     "OnlineMinMaxNormalization", "DataVisualizer",
-    "Trainer", "load_json_dict"
+    "Trainer", "load_json_dict", "MySAInTDashApplication"
 ]
