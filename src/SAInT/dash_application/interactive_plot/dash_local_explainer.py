@@ -1,7 +1,8 @@
 from dash import html
 import dash_bootstrap_components as dbc
 from timeit import default_timer as timer
-from SAInT import LocalLimeExplainer, LocalShapExplainer
+from SAInT.sa.lsa_lime import LocalLimeExplainer
+from SAInT.sa.lsa_shap import LocalShapExplainer
 from SAInT.dash_application.components import DashRadioButton
 
 class DashLocalExplainer:

@@ -1,5 +1,5 @@
 from timeit import default_timer as timer
-from SAInT import GlobalExplainer
+from SAInT.sa.gsa import GlobalExplainer
 from SAInT.dash_application.common.image_loader import ImageLoader
 
 

@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import filedialog
-from SAInT import makedirs
+from SAInT.common import makedirs
 
 def _initialize_root() -> tk.Tk:
     """Initializes and returns a hidden Tkinter root window."""

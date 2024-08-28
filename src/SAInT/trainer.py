@@ -5,8 +5,7 @@ from fastai.tabular.all import *
 from SAInT.common import set_seed, makedirs, load_json_dict
 from SAInT.dataloader import create_dataloader
 from SAInT.data_settings import load_data_settings_file
-from SAInT.networks import FastAIModel, MLP, TabResNet, RandomForestModel, XGBModel, SVModel, MultiOutputRandomForestModel
-from SAInT import do_grid_search
+from SAInT.networks import FastAIModel, MLP, TabResNet, RandomForestModel, XGBModel, SVModel, MultiOutputRandomForestModel, do_grid_search
 from SAInT.data_visualizer import DataVisualizer
 from SAInT.modelloader import ModelLoader
 from SAInT.metric import get_list_of_supported_standard_metrics, get_list_of_standard_metric_functions, get_metric

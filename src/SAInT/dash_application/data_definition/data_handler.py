@@ -6,7 +6,7 @@ import csv
 import shutil
 from timeit import default_timer as timer
 from pathlib import Path
-from SAInT import Trainer
+from SAInT.trainer import Trainer
 from SAInT.dash_application.common.data_dialog import ask_for_directory, ask_for_file
 from SAInT.dash_application.settings.app_settings import load_app_settings_file, save_app_settings_file
 from SAInT.data_settings import load_data_settings_file, save_data_settings_file
