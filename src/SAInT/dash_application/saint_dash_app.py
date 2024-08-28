@@ -11,6 +11,8 @@ from SAInT.dash_application.model_definition.progress_bar import ProgressBar
 from SAInT.dash_application.common.image_loader import ImageLoader
 from SAInT.dash_application.console.console import Console
 from SAInT.dash_application.callbacks import *
+import importlib.resources as pkg_resources
+from SAInT.dash_application import __name__ as dash_app_module
 
 class MySAInTDashApplication:
     def __init__(self):
@@ -28,10 +30,10 @@ class MySAInTDashApplication:
     def _setup_layout(self):
         title = "SAInT: An Interactive Tool for Sensitivity Analysis In The Loop"
         figure = self.application.interactive_plot.figure
-        logo_filepath = "SAInT/dash_application/logo.svg"
         image_loader = ImageLoader()
-        logo_src = image_loader.load_svg_from_file(filepath=logo_filepath)
-
+        logo_src = ""
+        with pkg_resources.path(dash_app_module, "logo.svg") as logo_svg_filepath:
+            logo_src = image_loader.load_svg_from_file(filepath=str(logo_svg_filepath))
         graph = layout.create_graph(figure=figure, id="graph")
         console = layout.create_console(interval_in_ms=500.0)
         gsa_figure_box = layout.create_gsa_window()
