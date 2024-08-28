@@ -12,7 +12,6 @@ class Console:
         self.stderr_buffer = io.StringIO()
         sys.stdout = self.stdout_buffer
         sys.stderr = self.stderr_buffer
-        print("Inited console.")
 
     def clear(self):
         self.stdout_buffer.seek(0)
