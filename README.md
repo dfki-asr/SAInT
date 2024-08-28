@@ -25,6 +25,20 @@ SAInT integrates Interactive Machine Learning (a-e) and Sensitivity Analysis (f-
 If you use our tool, please cite us.
 
 ## Installation
+
+We offer two ways of installing our package.
+
+### Fast and easy Installation using pip
+
+```
+pip install saintool
+```
+
+or
+
+
+### Installation of SAInT using the code of the GitHub Repository
+
 Clone the repository using SSH or HTTP or download and unzip the zip package.
 
 Clone using SSH:
