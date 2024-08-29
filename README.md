@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="src/SAInT/dash_application/logo.svg" alt="Logo" style="width: 50%;">
+  <img src="https://github.com/dfki-asr/SAInT/blob/main/src/SAInT/dash_application/logo.svg" alt="Logo" style="width: 50%;">
 </p>
 
 # SAInT: An Interactive Tool for Sensitivity Analysis In The Loop.
@@ -11,7 +11,7 @@ We introduce SAInT, an Interactive Tool for Sensitivity Analysis in The Loop, wh
 ## Overview
 
 <p align="center">
-  <img src="overview_600dpi.png" alt="Overview" style="width: 80%;">
+  <img src="https://github.com/dfki-asr/SAInT/blob/main/overview_600dpi.png" alt="Overview" style="width: 80%;">
 </p>
 
 <p align="justify">
