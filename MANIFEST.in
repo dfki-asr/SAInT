@@ -1,1 +1,3 @@
 src/SAInT/dash_application/logo.svg
+src/SAInT/templates/app_settings.json
+src/SAInT/templates/data_settings.json

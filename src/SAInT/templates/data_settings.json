@@ -11,7 +11,7 @@
     "metric": "mae",
     "normalization": "none",
     "batchsize": "[ 8 ]",
-    "output_folder": "../../outputs/exp1/",
+    "output_folder": "",
     "num_total": null,
     "delimiter": ",",
     "augmented_features": null,

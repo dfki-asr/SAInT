@@ -11,6 +11,9 @@ DataSettings = namedtuple(
 
 def handle_relative_paths(content, data_folder):
     for path_name in ["data_folder", "output_folder"]:
+        if path_name == "output_folder":
+            if content[path_name] == "":
+                content[path_name] = data_folder.replace("/data/", "/outputs/")
         if content[path_name][0] == "/":
             # Linux abs path
             continue

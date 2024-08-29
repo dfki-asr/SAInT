@@ -6,12 +6,15 @@ import csv
 import shutil
 from timeit import default_timer as timer
 from pathlib import Path
+from SAInT.common import exists
 from SAInT.trainer import Trainer
 from SAInT.dash_application.common.data_dialog import ask_for_directory, ask_for_file
 from SAInT.dash_application.settings.app_settings import load_app_settings_file, save_app_settings_file
 from SAInT.data_settings import load_data_settings_file, save_data_settings_file
 from SAInT.dash_application.common.config_conversion import infer_data_type
 from SAInT.dash_application.components import DashRadioButton, DashChecklist
+import importlib.resources as pkg_resources
+from SAInT.templates import __name__ as template_module
 
 def get_values_by_id(elements, target_id, target_type):
     # Check if the element is a list
@@ -50,12 +53,10 @@ class DataHandler:
     @staticmethod
     def _get_default_data_dir():
         """Get the default data directory."""
-        return DataHandler._get_default_dir("data")
-
-    @staticmethod
-    def _get_default_template_dir():
-        """Get the default template directory."""
-        return DataHandler._get_default_dir("templates")
+        data_dir = DataHandler._get_default_dir("data")
+        if exists(data_dir):
+            return data_dir
+        return None
 
     @staticmethod
     def _get_default_output_dir():
@@ -64,10 +65,9 @@ class DataHandler:
 
     def _copy_settings_template_file(self, settings_file: str, file_name: str):
         """Copy the settings template file to the specified location."""
-        template_folder_path = self._get_default_template_dir()
-        settings_default_template = os.path.join(template_folder_path, f"{file_name}.json")
-        shutil.copy(settings_default_template, settings_file)
-        print(f"Copied template file {settings_default_template} to {settings_file}.")
+        with pkg_resources.path(template_module, f"{file_name}.json") as settings_filepath:
+            shutil.copy(str(settings_filepath), settings_file)
+            print(f"Copied template file {settings_filepath} to {settings_file}.")
 
     def _load_settings(self, settings_file: str, file_name: str):
         """Load settings from a specified file."""
@@ -168,7 +168,7 @@ class DataHandler:
         feature_names = self._auto_infer_feature_names_from_csv_file(csv_first_row, delimiter)
         data_types = self._auto_infer_data_types_from_csv_file(csv_second_row, delimiter)
         modi = self._auto_infer_modi_and_rename_files(folder_path, csv_files)
-        output_folder = os.path.join(self._get_default_output_dir(), os.path.basename(folder_path)) + "/"
+        output_folder = folder_path.replace("/data/", "/outputs/")
 
         print(f"modi: {modi}, delimiter: '{delimiter}', feature_names: {feature_names}, output_folder: {output_folder}")
 
