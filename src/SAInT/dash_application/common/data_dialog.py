@@ -21,7 +21,8 @@ def _select_path(data_dir: str, title: str, mode: str) -> str:
     :return: The selected path.
     """
     root = _initialize_root()
-    makedirs(data_dir)
+    if data_dir is not None:
+        makedirs(data_dir)
     if mode == 'directory':
         path = filedialog.askdirectory(initialdir=data_dir, title=title)
     elif mode == 'file':
