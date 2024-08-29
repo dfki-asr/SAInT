@@ -28,7 +28,7 @@ If you use our tool, please cite us.
 
 We offer two ways of installing our package.
 
-### Fast and easy Installation using pip
+### Fast and easy Installation using pip (recommended)
 
 ```
 pip install saintool
@@ -51,9 +51,9 @@ git clone https://github.com/dfki-asr/SAInT.git
 ```
 
 
-Go to the source directory.
+Go to the main directory.
 ```
-cd SAInT/src
+cd SAInT
 ```
 Install the package by executing the script:
 ```
@@ -63,12 +63,15 @@ or directly by typing:
 ```
 python3 -m pip install -e .
 ```
+or just
+```
+pip install -e .
+```
 ## Usage
 Start the SAInT Dash application in the browser:
 ```
-python ./run_dash_application.py
+python3 -m SAInT
 ```
-
 The default browser should open automatically.
 
 Alternatively, you can use a browser of your choice by opening a new browser window and type in the address: http://127.0.0.1:8050/
