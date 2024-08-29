@@ -28,7 +28,7 @@ If you use our tool, please cite us.
 
 We offer two ways of installing our package.
 
-### Fast and easy Installation using pip (recommended)
+### Option 1: Fast and easy Installation using pip (recommended)
 
 ```
 pip install saintool
@@ -37,7 +37,7 @@ pip install saintool
 or
 
 
-### Installation of SAInT using the code of the GitHub Repository
+### Option 2: Installation of SAInT using the code of the GitHub Repository
 
 Clone the repository using SSH or HTTP or download and unzip the zip package.
 
@@ -49,7 +49,6 @@ Clone using HTTP:
 ```
 git clone https://github.com/dfki-asr/SAInT.git
 ```
-
 
 Go to the main directory.
 ```
@@ -67,7 +66,56 @@ or just
 ```
 pip install -e .
 ```
-## Usage
+
+## Setup working_directory and folder structure
+If you installed the tool with **Option 1**, there is no default SAInT main directory.
+
+We recommend to create a working directory that will contain two folders ```data``` and ```outputs```:
+```
+SAInT_working_directory/
+├── data
+└── outputs
+```
+
+If you installed the tool using **Option 2**, the SAInT directory already contains ```data``` and ```outputs``` folders.
+
+Create a subfolder for each dataset in the data folder and copy your .csv-data into it.
+
+**Single dataset, random splitting**:
+Placing only a single file will randomly split it into ```train```, ```valid```, and ```test```.
+Adjust the split fractions in the ```app_settings.json```: ```valid_frac``` and ```test_frac```.
+
+**Multiple pre-splitted datasets**
+Place your data as ```train_data.csv```, ```valid_data.csv``` and ```test_data.csv``` into the subfolder.
+
+```
+data/
+├── titanic
+|    └── total_data.csv
+├── your_own_dataset
+│    ├── train_data.csv
+│    ├── valid_data.csv
+│    └── test_data.csv
+├── ishigami_sobol_g
+|    └── total_data.csv
+└── ...
+```
+SAInT will automatically create the output directory for each dataset with ```models``` and ```figures``` subfolders and place the results there:
+```
+outputs/
+├── titanic
+│    ├── figures
+│    └── models
+├── your_own_dataset
+│    ├── figures
+│    └── models
+├── ishigami_sobol_g
+│    ├── figures
+│    └── models
+└── ...
+```
+
+## Start the application
 Start the SAInT Dash application in the browser:
 ```
 python3 -m SAInT
