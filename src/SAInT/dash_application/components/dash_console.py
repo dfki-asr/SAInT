@@ -2,7 +2,7 @@ from SAInT.dash_application.dash_component import DashComponent, html, dcc
 from SAInT.dash_application.components.dash_icon_button import DashIconButton
 from SAInT.dash_application.components.dash_interval import DashInterval
 from SAInT.dash_application.pixel_definitions import text_font_size
-from SAInT.dash_application.pixel_definitions import area_height
+from SAInT.dash_application.pixel_definitions import editor_window_height
 
 class DashConsole(DashComponent):
     def __init__(self, interval_in_ms: float = 500.0):
@@ -11,7 +11,7 @@ class DashConsole(DashComponent):
         self.default_value = ""
         self.fontsize = text_font_size
         self.width = "100%"
-        self.height = area_height
+        self.height = editor_window_height
         self.clear_button = DashIconButton(
             label="Clear console",
             class_name="fa fa-times",

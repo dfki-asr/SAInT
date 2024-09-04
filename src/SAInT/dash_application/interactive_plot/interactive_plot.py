@@ -4,6 +4,7 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objs as go
 from plotly.subplots import make_subplots
+from SAInT.dash_application.pixel_definitions import default_figure_height, figure_width, text_font_size, marker_size
 
 class InteractivePlot:
     def __init__(self, application):
@@ -202,7 +203,6 @@ class InteractivePlot:
         goodness_of_fit_color = color_palette[6]
         marker_symbols = ["circle", "square", "diamond"]
         marker_symbols_prediction = ["cross", "triangle-up", "star"]
-        marker_size = 14
         min_x, min_y, max_x, max_y = None, None, None, None
         traces = []
 
@@ -254,7 +254,7 @@ class InteractivePlot:
 
     def create_figure(self, application=None, dfs=None, preds=None, x_vals=None, sort_idx=None, do_save=False):
         """Create the main plot figure."""
-        default_height = 800
+        default_height = default_figure_height
         if not application or not dfs:
             return self._create_default_figure(default_height)
 
@@ -272,7 +272,7 @@ class InteractivePlot:
             application.model_handler.std_error_str = std_error_str
             showlegend = False
 
-        fontsize = 21
+        fontsize = int(text_font_size.replace("px", ""))
         figure.update_layout(
             clickmode='event+select',
             height=figure_height,
@@ -292,7 +292,7 @@ class InteractivePlot:
                 xanchor="center",
                 x=0.5,
             ),
-            width=2800,
+            width=figure_width,
             xaxis=dict(showgrid=False, title='', showticklabels=False, showline=False),
             yaxis=dict(showgrid=False, title='', showticklabels=False, showline=False),
             plot_bgcolor='white'

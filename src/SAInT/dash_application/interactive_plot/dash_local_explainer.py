@@ -4,7 +4,7 @@ from timeit import default_timer as timer
 from SAInT.sa.lsa_lime import LocalLimeExplainer
 from SAInT.sa.lsa_shap import LocalShapExplainer
 from SAInT.dash_application.components import DashRadioButton
-from SAInT.dash_application.pixel_definitions import area_height, shap_height
+from SAInT.dash_application.pixel_definitions import lime_height, shap_height, lsa_figure_width
 
 class DashLocalExplainer:
     def __init__(self, application):
@@ -50,7 +50,7 @@ class DashLocalExplainer:
             do_show=False,
             do_save=self.do_save
         )
-        lime_html = self._scale_html(lime_html, max_width=1800)
+        lime_html = self._scale_html(lime_html, scale=1.25, max_width=lsa_figure_width)
         return lime_html
 
     def _explain_local_shap(self, sample_dict):
@@ -79,7 +79,7 @@ class DashLocalExplainer:
             colors=self.hex_colors,
             do_save=self.do_save
         )
-        shap_html = self._scale_html(shap_html)
+        shap_html = self._scale_html(shap_html, scale=1.25, max_width=lsa_figure_width)
         return shap_html
 
     def _generate_explanation_body(self, sample_dict):
@@ -152,7 +152,7 @@ class DashLocalExplainer:
         src_lime = self._explain_local_lime(sample_dict)
         return html.Div([
             html.H5("LSA with LIME"),
-            html.Iframe(srcDoc=src_lime, height=area_height, width="100%")
+            html.Iframe(srcDoc=src_lime, height=lime_height, width="100%")
         ])
 
     def _generate_shap_info(self, sample_dict):
@@ -169,7 +169,7 @@ class DashLocalExplainer:
             html.Iframe(srcDoc=src_shap, height=shap_height, width="100%")
         ])
 
-    def _scale_html(self, html_content, scale=2.0, max_width=None):
+    def _scale_html(self, html_content, scale=1.0, max_width=None):
         """
         Scale the HTML content for better display.
 
