@@ -89,7 +89,6 @@ def create_settings_panel():
     return DashDiv(id="settings-div",
                    content=[
                        content,
-                       DashNewline(),
                        save_settings_grid
                    ],
                    width="100%",
