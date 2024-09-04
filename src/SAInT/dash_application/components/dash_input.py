@@ -1,8 +1,8 @@
 from SAInT.dash_application.dash_component import DashComponent, html, dbc
-from SAInT.dash_application.pixel_definitions import text_font_size, default_input_width
+from SAInT.dash_application.pixel_definitions import text_font_size
 
 class DashInput(DashComponent):
-    def __init__(self, id, name: str = "", default_value: str = "", width: str = default_input_width):
+    def __init__(self, id, name: str = "", default_value: str = "", width: str = "100%"):
         super().__init__(id=id)
         self.name = name
         self.default_value = default_value

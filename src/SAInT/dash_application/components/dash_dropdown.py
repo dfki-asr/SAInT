@@ -1,5 +1,5 @@
 from SAInT.dash_application.dash_component import DashComponent, html, dbc
-from SAInT.dash_application.pixel_definitions import text_font_size, dropdown_select_width
+from SAInT.dash_application.pixel_definitions import text_font_size
 
 class DashDropdown(DashComponent):
     def __init__(self, options, default_value, id):
@@ -14,7 +14,7 @@ class DashDropdown(DashComponent):
                 id=self.id,
                 options=self.options,
                 value=self.default_value,
-                style={"width": dropdown_select_width,
+                style={"width": "100%",
                     "font-size": self.fontsize}
             ),
         html.Div(id=f"{self.id}-output")
