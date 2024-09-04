@@ -282,7 +282,7 @@ class InteractivePlot:
             modebar=dict(
                 orientation="h",
                 color="black",
-                add=["toimage", "zoom", "pan", "zoomin", "zoomout", "autoscale", "reset"],
+                add=["toimage", "zoom", "pan", "zoomin", "zoomout", "autoscale"],
                 remove=["lasso", "lasso2d", "select", "select2d"]
             ),
             width=2800,
