@@ -67,7 +67,6 @@ class InteractivePlot:
     def _add_trace(self, figure, row, col, trace):
         """Add a trace to the figure."""
         figure.add_trace(trace, row=row, col=col)
-        figure.update_layout(legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1))
 
     def _sort_values(self, pred, y, features, sort_idx):
         """Sort values based on the sorting criterion, while keeping track of the original indices."""
@@ -284,6 +283,14 @@ class InteractivePlot:
                 color="black",
                 add=["toimage", "zoom", "pan", "zoomin", "zoomout", "autoscale"],
                 remove=["lasso", "lasso2d", "select", "select2d"]
+            ),
+            margin=dict(t=120),
+            legend=dict(
+                orientation="h",
+                yanchor="bottom",
+                y=1.05,
+                xanchor="center",
+                x=0.5,
             ),
             width=2800,
             xaxis=dict(showgrid=False, title='', showticklabels=False, showline=False),
