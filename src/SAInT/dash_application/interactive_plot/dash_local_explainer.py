@@ -93,7 +93,7 @@ class DashLocalExplainer:
         y_value = sample_dict["y"]
         p_value = sample_dict["p"]
         body = [
-            html.H3(sample_dict['output_name'])
+            html.H6(sample_dict['output_name'])
         ]
         gt_pred_mae_text = f"groundtruth: {y_value:.5f}"
         if p_value is not None:
@@ -107,7 +107,7 @@ class DashLocalExplainer:
                 body.append(self._generate_shap_info(sample_dict))
         features = ", ".join([f"{k}: {v}" for k, v in sample_dict["x"].items()])
         body.extend([
-            html.H3("Features"),
+            html.H6("Features"),
             html.P(features)
         ])
         return body
@@ -151,7 +151,7 @@ class DashLocalExplainer:
         """
         src_lime = self._explain_local_lime(sample_dict)
         return html.Div([
-            html.H3("LSA with LIME"),
+            html.H5("LSA with LIME"),
             html.Iframe(srcDoc=src_lime, height=area_height, width="100%")
         ])
 
@@ -165,7 +165,7 @@ class DashLocalExplainer:
         """
         src_shap = self._explain_local_shap(sample_dict)
         return html.Div([
-            html.H3("LSA with SHAP"),
+            html.H5("LSA with SHAP"),
             html.Iframe(srcDoc=src_shap, height=shap_height, width="100%")
         ])
 
