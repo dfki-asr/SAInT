@@ -4,7 +4,7 @@ mpl.rcParams["hatch.linewidth"] = 0.3
 import matplotlib.pyplot as plt
 from SAInT.dash_application.common.dash_functions import get_pressed_buttons
 from SAInT.dash_application.common.image_loader import ImageLoader
-from SAInT.dash_application.pixel_definitions import error_plot_width, error_plot_height
+from SAInT.dash_application.pixel_definitions import error_plot_width, error_plot_height, text_font_size
 
 def register_plot_callback(dash_app, app):
     @dash_app.callback(
@@ -166,7 +166,14 @@ def _create_error_plot_and_string(app):
         return errors_list, models_list, error_str, colors_list
 
     def create_bar_plot(models_list, errors_list, color_list, metric, figure_folder):
-        plt.figure(figsize=(10, 6))
+        def calculate_fontsize(x, min_items=1, max_items=20, min_fontsize=16, max_fontsize=33):
+            # Ensure x is within the bounds
+            x = max(min_items, min(max_items, x))
+            # Linear interpolation of font size
+            fontsize = max_fontsize - (max_fontsize - min_fontsize) * ((x - min_items) / (max_items - min_items))
+            return int(fontsize)
+
+        plt.figure(figsize=(16, 8))
         # Define hatches to differentiate bars
         hatches = ['/', 'o', '-', '\\', '.', '+', 'x', 'O', '|', '*']
         # Create a mapping of colors to hatches
@@ -177,17 +184,14 @@ def _create_error_plot_and_string(app):
         # Apply hatches based on color
         for bar, color in zip(bars, color_list):
             bar.set_hatch(color_to_hatch[color])
-        plt.xlabel("Model", fontsize=12)
-
-        adaptive_fontsize = int(1/len(models_list) * 100)
-        if adaptive_fontsize < 6:
-            adaptive_fontsize = 6
-        if adaptive_fontsize > 16:
-            adaptive_fontsize = 16
+        fontsize = 2.5 * int(text_font_size.replace("px", ""))
+        plt.xlabel("Model", fontsize=fontsize)
+        adaptive_fontsize = calculate_fontsize(x=len(models_list), max_fontsize=fontsize)
         plt.xticks(fontsize=adaptive_fontsize)
+        plt.yticks(fontsize=adaptive_fontsize)
         metric_str = str(metric).upper()
-        plt.ylabel(f"{metric_str}", fontsize=12)
-        plt.title(f"{metric_str} of models on {selected} dataset", fontsize=12)
+        plt.ylabel(f"{metric_str}", fontsize=fontsize)
+        plt.title(f"{metric_str} of models on {selected} dataset", fontsize=fontsize)
         figure_path = figure_folder + "/error_on_models.svg"
         plt.savefig(figure_path, facecolor="white")
         image_loader = ImageLoader()
