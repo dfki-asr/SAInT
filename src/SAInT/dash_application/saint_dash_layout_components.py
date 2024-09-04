@@ -75,7 +75,7 @@ def create_settings_panel():
                             DashDiv(id="saved_to_notification", content=[],
                                     width="100%", visible=False)
                         ],
-                        item_widths=[1, 2],
+                        item_widths=[3, 5],
                         id="save_settings_panel")
     settings_app_json_editor = DashJsonEditor(id="settings-app-json-editor")
     settings_data_json_editor = DashJsonEditor(id="settings-data-json-editor")
@@ -172,14 +172,14 @@ def create_tabs(console, graph,
                               models_definition_input,
                               model_definition_stop_training_button
                               ],
-                 item_widths=[2, 7, 2],
+                 item_widths=[2, 8, 2],
                  id="model_definition_config_grid"),
         DashNewline(),
         DashGrid(item_values=[models_definition_button_div,
                               models_definition_added_models_div,
                               models_definition_stop_training_div
                               ],
-                 item_widths=[1, 5, 1],
+                 item_widths=[2, 8, 2],
                  id="model_definition_add_grid"),
         DashNewline(),
         DashHeading(title="Loaded models: ", id="loaded-heading"),
