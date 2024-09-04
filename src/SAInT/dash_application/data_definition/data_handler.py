@@ -12,9 +12,10 @@ from SAInT.dash_application.common.data_dialog import ask_for_directory, ask_for
 from SAInT.dash_application.settings.app_settings import load_app_settings_file, save_app_settings_file
 from SAInT.data_settings import load_data_settings_file, save_data_settings_file
 from SAInT.dash_application.common.config_conversion import infer_data_type
-from SAInT.dash_application.components import DashRadioButton, DashChecklist
+from SAInT.dash_application.components import DashRadioButton, DashChecklist, DashDiv, DashNewline
 import importlib.resources as pkg_resources
 from SAInT.templates import __name__ as template_module
+from SAInT.dash_application.pixel_definitions import margin
 
 def get_values_by_id(elements, target_id, target_type):
     # Check if the element is a list
@@ -323,9 +324,15 @@ class DataHandler:
             html.Br(),
             normalization_radio_button.to_html(),
             html.Br(),
-            input_checklist.to_html(),
-            html.Br(),
-            output_checklist.to_html()
+            DashDiv(
+                id="feature_in_out_checkbox_div",
+                content=[
+                    input_checklist,
+                    output_checklist
+                ],
+                inline=True,
+                gap=margin
+            ).to_html()
         ]
         self.application.feature_selection_popup.set_content(body)
         self.application.feature_selection_popup.open()

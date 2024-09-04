@@ -1,6 +1,6 @@
 from SAInT.dash_application.dash_component import DashComponent, dbc, html
 from SAInT.dash_application.components import DashIconButton, DashRadioButton
-from SAInT.dash_application.pixel_definitions import popup_font_size, margin
+from SAInT.dash_application.pixel_definitions import popup_font_size
 
 class DashPopup(DashComponent):
     def __init__(self, title: str, id_popup: str, id_window: str, id_close: str, id_save: str = None, fullscreen: bool = True):
@@ -33,9 +33,10 @@ class DashPopup(DashComponent):
 
     def to_html(self):
         close_button = DashIconButton(label="", class_name="fa fa-times", id=self.id_close).to_html()
-        title = html.Div([self.title], style={"margin-right": margin})
-        button = html.Div([close_button])
-        header_content = html.Div([title, button], style={"display": "flex", "alignItems": "center"})
+        title = html.Div([self.title], style={"flex": "1", "textAlign": "left"})
+        button = html.Div([close_button], style={"flex": "0", "textAlign": "right"})
+        header_content = html.Div([title, button],
+                                style={"display": "flex", "alignItems": "center", "width": "100%"})
         content = [
             dbc.ModalHeader(header_content, close_button=False),
             dbc.ModalBody(id=self.id_window)
@@ -63,6 +64,12 @@ class DashPopup(DashComponent):
             fullscreen=self.fullscreen,
             keyboard=False,
             backdrop="static",
-            style={"font-size": self.fontsize},
+            style={
+                "font-size": self.fontsize,
+                "display": "flex",
+                "alignItems": "center",
+                "justifyContent": "center",
+                "margin-left": "auto"
+            },
             centered=True
         )
