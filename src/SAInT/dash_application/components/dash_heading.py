@@ -7,4 +7,4 @@ class DashHeading(DashComponent):
         self.title = title
 
     def to_html(self):
-        return html.H4(self.title)
+        return html.H6(self.title)

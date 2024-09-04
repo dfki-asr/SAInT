@@ -11,7 +11,7 @@ class DashJsonEditor(DashComponent):
 
     def to_html(self):
         return html.Div([
-            html.H4(f"{self.id}"),
+            html.H6(f"{self.id}"),
             dcc.Textarea(
             id=self.id,
             style={"width": self.width,

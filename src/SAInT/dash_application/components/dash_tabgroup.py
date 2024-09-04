@@ -7,4 +7,9 @@ class DashTabGroup(DashComponent):
 
     def to_html(self):
         content = [tab.to_html() for tab in self.tabs]
-        return dbc.Tabs(content)
+        return dbc.Tabs(content,
+                        style={"display": "flex",
+                               "justify-content": "flex-begin",
+                               "width": "auto"
+            }
+        )

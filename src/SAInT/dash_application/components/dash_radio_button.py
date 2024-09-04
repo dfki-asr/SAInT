@@ -11,7 +11,7 @@ class DashRadioButton(DashComponent):
 
     def to_html(self):
         return html.Div([
-            html.H4(self.name),
+            html.H6(self.name),
             dbc.RadioItems(self.options,
                        self.default_value,
                        inline=True,

@@ -20,6 +20,7 @@ class DashButton(DashComponent):
             style={"font-size": self.fontsize,
                    "border": self.border_line,
                    "border-radius": self.border_radius,
+                   "line-height": "1.2",
                    "padding": padding
                    },
             n_clicks=0)

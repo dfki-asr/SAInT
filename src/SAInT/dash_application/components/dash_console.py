@@ -22,7 +22,7 @@ class DashConsole(DashComponent):
 
     def to_html(self):
         return html.Div([
-        html.H3(self.name),
+        html.H5(self.name),
         dcc.Textarea(id=self.id,
                     value=self.default_value,
                     readOnly=True,

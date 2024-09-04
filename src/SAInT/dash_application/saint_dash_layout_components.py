@@ -237,5 +237,5 @@ def create_tabs(console, graph,
     return tabs
 
 def create_main_area(tabs):
-    main_area = DashDiv(id="main-div", content=[tabs])
+    main_area = DashDiv(id="main-div", content=[tabs], margin="0")
     return main_area

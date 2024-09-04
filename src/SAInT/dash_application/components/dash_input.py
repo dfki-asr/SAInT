@@ -12,7 +12,7 @@ class DashInput(DashComponent):
     def to_html(self):
         content = []
         if self.name != "":
-            content.append(html.H4(self.name))
+            content.append(html.H6(self.name))
         content += [dbc.Input(id=self.id,
                       type="text",
                       value=self.default_value,

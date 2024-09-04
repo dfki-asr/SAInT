@@ -1,5 +1,5 @@
 from SAInT.dash_application.dash_component import DashComponent, dbc
-from SAInT.dash_application.pixel_definitions import popup_font_size
+from SAInT.dash_application.pixel_definitions import popup_font_size, tab_gap, padding
 
 class DashTab(DashComponent):
     def __init__(self, id, label, content):
@@ -9,9 +9,18 @@ class DashTab(DashComponent):
         self.fontsize = popup_font_size
 
     def to_html(self):
-        tab_content = dbc.Card(dbc.CardBody([item.to_html() for item in self.content]))
+        tab_content = dbc.Card(dbc.CardBody(
+            [item.to_html() for item in self.content],
+            style={
+                "padding": padding
+            })
+        )
         return dbc.Tab(
             children=tab_content,
             label=self.label,
-            tab_style={'font-size': self.fontsize}
+            label_style={"padding": padding},
+            tab_style={
+                "font-size": self.fontsize,
+                "margin-right": tab_gap
+            }
         )

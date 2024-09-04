@@ -12,7 +12,7 @@ class DashChecklist(DashComponent):
 
     def to_html(self):
         return html.Div([
-            html.H4(self.name),
+            html.H6(self.name),
             dbc.Checklist(self.options,
                         self.default_value,
                         inline=self.inline,
