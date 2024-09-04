@@ -1,13 +1,14 @@
 
 from SAInT.dash_application.dash_component import DashComponent, html
+from SAInT.dash_application.pixel_definitions import title_font_size, logo_height, margin
 
 class DashHeader(DashComponent):
     def __init__(self, title, logo):
         super().__init__(id="header")
         self.title = title
         self.logo = logo
-        self.fontsize = "60px"
-        self.margin_right = "30px"
+        self.fontsize = title_font_size
+        self.margin_right = margin
 
     def to_html(self):
         return html.Div([
@@ -25,7 +26,7 @@ class DashHeader(DashComponent):
             html.Img(
                 src=self.logo,
                 style={
-                    "height": "100px",
+                    "height": logo_height,
                     "margin-left": "auto",
                     "margin-right": self.margin_right
                 }

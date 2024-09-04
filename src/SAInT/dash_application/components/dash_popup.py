@@ -1,10 +1,11 @@
 from SAInT.dash_application.dash_component import DashComponent, dbc, html
 from SAInT.dash_application.components import DashIconButton, DashRadioButton
+from SAInT.dash_application.pixel_definitions import popup_font_size, margin
 
 class DashPopup(DashComponent):
     def __init__(self, title: str, id_popup: str, id_window: str, id_close: str, id_save: str = None, fullscreen: bool = True):
         super().__init__(id=id_popup)
-        self.fontsize = "30px"
+        self.fontsize = popup_font_size
         self.title = title
         self.id_popup = id_popup
         self.id_window = id_window
@@ -32,7 +33,7 @@ class DashPopup(DashComponent):
 
     def to_html(self):
         close_button = DashIconButton(label="", class_name="fa fa-times", id=self.id_close).to_html()
-        title = html.Div([self.title], style={"margin-right": "30px"})
+        title = html.Div([self.title], style={"margin-right": margin})
         button = html.Div([close_button])
         header_content = html.Div([title, button], style={"display": "flex", "alignItems": "center"})
         content = [

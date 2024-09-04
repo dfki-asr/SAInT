@@ -1,4 +1,5 @@
 from SAInT.dash_application.dash_component import DashComponent, html
+from SAInT.dash_application.pixel_definitions import text_font_size
 
 class DashDiv(DashComponent):
     def __init__(self, id,
@@ -10,7 +11,7 @@ class DashDiv(DashComponent):
                  gap: str = None):
         super().__init__(id=id)
         self.content = content
-        self.fontsize = "25px"
+        self.fontsize = text_font_size
         self.width = width
         self.margin = margin
         self.visible = visible

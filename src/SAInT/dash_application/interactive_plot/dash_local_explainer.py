@@ -4,6 +4,7 @@ from timeit import default_timer as timer
 from SAInT.sa.lsa_lime import LocalLimeExplainer
 from SAInT.sa.lsa_shap import LocalShapExplainer
 from SAInT.dash_application.components import DashRadioButton
+from SAInT.dash_application.pixel_definitions import area_height, shap_height
 
 class DashLocalExplainer:
     def __init__(self, application):
@@ -151,7 +152,7 @@ class DashLocalExplainer:
         src_lime = self._explain_local_lime(sample_dict)
         return html.Div([
             html.H3("LSA with LIME"),
-            html.Iframe(srcDoc=src_lime, height="550px", width="100%")
+            html.Iframe(srcDoc=src_lime, height=area_height, width="100%")
         ])
 
     def _generate_shap_info(self, sample_dict):
@@ -165,7 +166,7 @@ class DashLocalExplainer:
         src_shap = self._explain_local_shap(sample_dict)
         return html.Div([
             html.H3("LSA with SHAP"),
-            html.Iframe(srcDoc=src_shap, height="350px", width="100%")
+            html.Iframe(srcDoc=src_shap, height=shap_height, width="100%")
         ])
 
     def _scale_html(self, html_content, scale=2.0, max_width=None):

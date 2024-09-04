@@ -4,6 +4,7 @@ mpl.rcParams["hatch.linewidth"] = 0.3
 import matplotlib.pyplot as plt
 from SAInT.dash_application.common.dash_functions import get_pressed_buttons
 from SAInT.dash_application.common.image_loader import ImageLoader
+from SAInT.dash_application.pixel_definitions import error_plot_width, error_plot_height
 
 def register_plot_callback(dash_app, app):
     @dash_app.callback(
@@ -190,7 +191,7 @@ def _create_error_plot_and_string(app):
         figure_path = figure_folder + "/error_on_models.svg"
         plt.savefig(figure_path, facecolor="white")
         image_loader = ImageLoader()
-        src = image_loader.load_svg_from_file(figure_path, width="500px", height="500px")
+        src = image_loader.load_svg_from_file(figure_path, width=error_plot_width, height=error_plot_height)
         return src
 
     model_names = list(app.application.trainer.models.keys())

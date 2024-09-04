@@ -1,4 +1,5 @@
 from SAInT.dash_application.dash_component import DashComponent, html
+from SAInT.dash_application.pixel_definitions import margin
 
 class DashButtonGroup(DashComponent):
     def __init__(self, buttons, id):
@@ -14,7 +15,7 @@ class DashButtonGroup(DashComponent):
                                         style={"align-self": "flex-end"}))
             else:
                 content.append(html.Div([button.to_html()],
-                                        style={"margin-right": "30px"}))
+                                        style={"margin-right": margin}))
         return html.Div(
             content,
             style={

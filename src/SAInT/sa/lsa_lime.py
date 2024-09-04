@@ -4,6 +4,7 @@ import pandas as pd
 from lime.lime_tabular import LimeTabularExplainer
 from SAInT.model import Model
 from SAInT.common import makedirs
+from SAInT.dash_application.pixel_definitions import lime_expl_width
 
 
 class LocalLimeExplainer():
@@ -108,9 +109,10 @@ class LocalLimeExplainer():
         lime_html = explanation.as_html(**kwargs)
 
         # Increase width of explanation "positive"/"negative" figure
+        lime_expl_size_replace_str = ".lime.explanation { width: " + lime_expl_width + "; }"
         lime_html = str(lime_html).replace(
             ".lime.explanation {\\n  width: 350px;\\n}\\n\\n",
-            ".lime.explanation { width: 850px; }"
+            lime_expl_size_replace_str
         )
         # Move table closer to explanation "positive"/"negative" figure
         lime_html = lime_html.replace(

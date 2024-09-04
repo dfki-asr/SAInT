@@ -1,4 +1,5 @@
 from SAInT.dash_application.dash_component import DashComponent, html, dbc
+from SAInT.dash_application.pixel_definitions import text_font_size
 
 class DashChecklist(DashComponent):
     def __init__(self, name, options, default_value, id, inline: bool = True):
@@ -6,7 +7,7 @@ class DashChecklist(DashComponent):
         self.name = name
         self.options = options
         self.default_value = default_value
-        self.fontsize = "25px"
+        self.fontsize = text_font_size
         self.inline = inline
 
     def to_html(self):

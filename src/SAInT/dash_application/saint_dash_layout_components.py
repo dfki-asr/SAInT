@@ -1,5 +1,6 @@
 from SAInT.dash_application.components import *
 from SAInT.metric import get_list_of_supported_standard_metrics
+from SAInT.dash_application.pixel_definitions import default_input_width, model_input_width, model_add_width, stop_training_width
 
 def create_icon_button(label, class_name, id):
     return DashIconButton(label=label, class_name=class_name, id=id)
@@ -73,7 +74,7 @@ def create_settings_panel():
         return DashGrid(item_values=[
                             save_settings_button,
                             DashDiv(id="saved_to_notification", content=[],
-                                    width="100px", visible=False)
+                                    width=default_input_width, visible=False)
                         ],
                         item_widths=[1, 2],
                         id="save_settings_panel")
@@ -146,21 +147,21 @@ def create_tabs(console, graph,
     models_definition_input = DashInput(id="models-definition-configuration-input",
                   name="",
                   default_value="",
-                  width="1500px")
+                  width=model_input_width)
     model_definition_stop_training_button = DashIconButton(label="Stop Training",
                                                            class_name="fa fa-stop",
                                                            id="stop_training_button")
     models_definition_button_div = DashDiv(id="models-configuration-button-div",
                                         content=[],
-                                        width="100px",
+                                        width=default_input_width,
                                         visible=True)
     models_definition_added_models_div = DashDiv(id="models-configuration-added-models-div",
                                         content=[],
-                                        width="500px",
+                                        width=model_add_width,
                                         visible=True)
     models_definition_stop_training_div = DashDiv(id="models-configuration-stop-training-div",
                                         content=[],
-                                        width="150px",
+                                        width=stop_training_width,
                                         visible=True)
 
     models_textfield = DashTextarea(id="models_info")
