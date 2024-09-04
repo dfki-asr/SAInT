@@ -25,4 +25,3 @@ lime_height = f"{int(height / 100 * 32)}px"
 shap_height = f"{int(height / 100 * 22)}px"
 error_plot_height = f"{int(height / 100 * 15)}px"
 error_plot_width = f"{int(width / 100 * 50)}px"
-lsa_figure_width = figure_width
