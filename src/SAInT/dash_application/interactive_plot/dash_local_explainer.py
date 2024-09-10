@@ -1,4 +1,5 @@
 from dash import html
+import re
 import dash_bootstrap_components as dbc
 from timeit import default_timer as timer
 from SAInT.sa.lsa_lime import LocalLimeExplainer
@@ -19,6 +20,7 @@ class DashLocalExplainer:
         self.explain_lime = True
         self.explain_shap = True
         self.do_save = True
+        self.top_n = 5
 
     def _explain_local_lime(self, sample_dict):
         """
@@ -40,6 +42,9 @@ class DashLocalExplainer:
         explanation = explainer.explain(sample_dict["x"],
                                         num_features=num_features,
                                         output_idx=sample_dict["output_idx"])
+
+        top_features = explainer.get_top_n_features(explanation, self.top_n)
+        self._check_for_sensitive_features(top_features)
         print(f"LSA with LIME took {(timer() - start):.2f} s.")
 
         title = f"{self.application.model_handler.best_model.name}_LIME"
@@ -52,6 +57,32 @@ class DashLocalExplainer:
         )
         lime_html = self._scale_html(lime_html, scale=0.9)
         return lime_html
+
+    def _check_for_sensitive_features(self, top_features):
+        '''
+        This combined regex captures:
+        "Age" or "age"
+        "Sex", "sex", "Sex_male", "Sex_female" (with optional suffixes)
+        "Race", "race", "RaceDesc", "raceDesc", "RaceDesc_ followed by various race descriptions
+        "Gender", "gender", "GenderID"
+        '''
+        # Check if there are sensitive features in the top features
+        # Compile the regex pattern
+        pattern = re.compile(r'([Aa]ge|[Ss]ex(?:_[a-zA-Z]+)?|[Rr]ace(?:[Dd]esc(?:_[A-Za-z\s]+)?)?|[Gg]ender(?:ID)?)')
+        # Function to check if a feature name matches the pattern
+        def is_feature_name_match(feature_name):
+            return bool(pattern.match(feature_name))
+        # Initialize an empty list to store sensitive features
+        sensitive_features = []
+        # Check the top features for matches with the regex pattern
+        for f in top_features:
+            if is_feature_name_match(f):
+                sensitive_features.append(f)
+        # Return the list of sensitive features
+        if len(sensitive_features) > 0:
+            print("Found sensitive features: ", sensitive_features)
+        return sensitive_features
+
 
     def _explain_local_shap(self, sample_dict):
         """
@@ -69,6 +100,8 @@ class DashLocalExplainer:
             figure_folder=self.application.trainer.figure_folder
         )
         explanation = shap_explainer.explain(sample_dict["x"])
+        top_features = shap_explainer.get_top_n_features(explanation, self.top_n)
+        self._check_for_sensitive_features(top_features)
         print(f"LSA with SHAP took {(timer() - start):.2f} s.")
 
         title = f"{self.application.model_handler.best_model.name}_SHAP_n100"

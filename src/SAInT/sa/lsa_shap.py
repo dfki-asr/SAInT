@@ -29,6 +29,26 @@ class LocalShapExplainer():
         explanation = self.explainer(inputs)
         return explanation
 
+    def get_top_n_features(self, explanation, top_n: int = 5):
+        """
+        This function returns a list of the top_n most important features, either positively or negatively.
+        Parameters:
+        - explanation: the SHAP explanation object
+        - top_n: the number of top features to consider (default is 5)
+        Returns:
+        - List of the top n most important features.
+        """
+        # Extract the SHAP values and feature names
+        shap_values = explanation.values
+        feature_names = list(explanation.data.keys())
+        # Compute absolute values for importance and sort the features
+        feature_importances = [(name, abs(shap_value)) for name, shap_value in zip(feature_names, shap_values)]
+        sorted_features = sorted(feature_importances, key=lambda x: x[1], reverse=True)
+        # Get the top_n most important features
+        top_features = [name for name, _ in sorted_features[:top_n]]
+        return top_features
+
+
     def plot(self, explanation, title: str, output_idx: int = 0, colors: list = ["blue", "orange"], do_save=False):
         shap.initjs()
         total_base_values = self.explainer.expected_value

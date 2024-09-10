@@ -97,6 +97,21 @@ class LocalLimeExplainer():
 
         return explanation
 
+    def get_top_n_features(self, explanation, top_n: int = 5):
+        """ This function returns a list of the top_n most important features, either positively or negatively.
+        Parameters:
+        - explanation: the LIME explanation object
+        - top_n: the number of top features to consider (default is 5)
+        Returns:
+        - List of the top n most important features.
+        """
+        # Get the list of features and their weights from LIME explanation
+        feature_importances = explanation.as_list()
+        # Sort features by absolute weight (importance)
+        sorted_features = sorted(feature_importances, key=lambda x: abs(x[1]), reverse=True)
+        # Extract the top_n most important feature names
+        top_features = [name for name, _ in sorted_features[:top_n]]
+        return top_features
 
     def plot(self, explanation, title: str, colors: list = ["blue", "orange"], do_show = False, do_save = False):
         kwargs = {
