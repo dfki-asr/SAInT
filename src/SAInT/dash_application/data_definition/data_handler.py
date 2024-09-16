@@ -15,7 +15,6 @@ from SAInT.dash_application.common.config_conversion import infer_data_type
 from SAInT.dash_application.components import DashRadioButton, DashChecklist, DashDiv, DashNewline
 import importlib.resources as pkg_resources
 from SAInT.templates import __name__ as template_module
-from SAInT.dash_application.pixel_definitions import margin
 
 def get_values_by_id(elements, target_id, target_type):
     # Check if the element is a list
@@ -319,10 +318,13 @@ class DataHandler:
                                          default_value=selected_output,
                                          id="outputnames_checklist",
                                          inline=False)
+        pixel_def = self.application.pixel_definitions
+        if pixel_def is None:
+            raise RuntimeError("Pixel Definition error!")
         body = [
-            mode_radio_button.to_html(),
+            mode_radio_button.to_html(pixel_def),
             html.Br(),
-            normalization_radio_button.to_html(),
+            normalization_radio_button.to_html(pixel_def),
             html.Br(),
             DashDiv(
                 id="feature_in_out_checkbox_div",
@@ -331,8 +333,8 @@ class DataHandler:
                     output_checklist
                 ],
                 inline=True,
-                gap=margin
-            ).to_html()
+                gap=pixel_def.margin
+            ).to_html(pixel_def)
         ]
         self.application.feature_selection_popup.set_content(body)
         self.application.feature_selection_popup.open()

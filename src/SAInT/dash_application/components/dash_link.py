@@ -9,7 +9,7 @@ class DashLink(DashComponent):
         self.rel = rel
         self.href = href
 
-    def to_html(self):
+    def to_html(self, pixel_def):
         return html.Link(
             rel=self.rel,
             href=self.href

@@ -5,5 +5,5 @@ class DashNewline(DashComponent):
     def __init__(self, id: str = None):
         super().__init__(id=id)
 
-    def to_html(self):
+    def to_html(self, pixel_def):
         return html.Br()

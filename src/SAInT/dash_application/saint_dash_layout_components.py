@@ -4,8 +4,8 @@ from SAInT.metric import get_list_of_supported_standard_metrics
 def create_icon_button(label, class_name, id):
     return DashIconButton(label=label, class_name=class_name, id=id)
 
-def create_console(interval_in_ms):
-    return DashConsole(interval_in_ms=interval_in_ms)
+def create_console():
+    return DashConsole()
 
 def create_gsa_window():
     return DashWindow(default_value="", id="gsa_window_div")

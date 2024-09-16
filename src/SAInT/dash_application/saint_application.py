@@ -4,10 +4,12 @@ from SAInT.dash_application.interactive_plot.interactive_plot import Interactive
 from SAInT.dash_application.interactive_plot.dash_local_explainer import DashLocalExplainer
 from SAInT.dash_application.model_definition.model_handler import ModelHandler
 from SAInT.dash_application.components.dash_popup import DashPopup
+from SAInT.dash_application.pixel_definitions import PixelDefinitions
 
 class SAInTApplication:
 
     def __init__(self, settings: ApplicationSettings = None):
+        self.pixel_definitions = PixelDefinitions(width=1386, height=768)
         palettes = ColorPaletteRegistry()
         palettes.setup()
         self.color_palette = palettes.palette_dict["saint"]

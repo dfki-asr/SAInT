@@ -4,7 +4,6 @@ import pandas as pd
 from lime.lime_tabular import LimeTabularExplainer
 from SAInT.model import Model
 from SAInT.common import makedirs
-from SAInT.dash_application.pixel_definitions import lime_expl_width
 
 
 class LocalLimeExplainer():
@@ -13,12 +12,14 @@ class LocalLimeExplainer():
                  model: Model,
                  data: np.array,
                  data_type: str = "tabular",
-                 figure_folder: str = ""):
+                 figure_folder: str = "",
+                 lime_expl_width: str = "65%"):
         self.model = model
         self.data = data
         self.type = data_type
         self.explainer = None
         self.figure_folder = figure_folder
+        self.lime_expl_width = lime_expl_width
 
         if len(self.model.categorical_cols) > 0:
             raise RuntimeError("Error: Dataset has categorial features!")
@@ -124,7 +125,7 @@ class LocalLimeExplainer():
         lime_html = explanation.as_html(**kwargs)
 
         # Increase width of explanation "positive"/"negative" figure
-        lime_expl_size_replace_str = ".lime.explanation { width: " + lime_expl_width + "; }"
+        lime_expl_size_replace_str = ".lime.explanation { width: " + self.lime_expl_width + "; }"
         lime_html = str(lime_html).replace(
             ".lime.explanation {\\n  width: 350px;\\n}\\n\\n",
             lime_expl_size_replace_str

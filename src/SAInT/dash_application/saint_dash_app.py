@@ -11,6 +11,7 @@ from SAInT.dash_application.model_definition.progress_bar import ProgressBar
 from SAInT.dash_application.common.image_loader import ImageLoader
 from SAInT.dash_application.console.console import Console
 from SAInT.dash_application.callbacks import *
+from SAInT.dash_application.components.dash_interval import DashInterval
 import importlib.resources as pkg_resources
 from SAInT.dash_application import __name__ as dash_app_module
 
@@ -24,10 +25,26 @@ class MySAInTDashApplication:
         self.console = Console()
         self.data_handler = DataHandler(application=self.application)
         self.progress_bar = ProgressBar()
+        # Store current screen dimensions to check for changes
+        self.current_screen_dims = None
+        self.setup_done = False
+        self.registered_callbacks_done = False
+        self.interval_component = DashInterval(interval_in_ms=500.0, id="interval_component")
+        # Initial basic layout to include the necessary components
+        self.app.layout = html.Div([
+            html.Div(id="screen-dimensions", style={"display": "none"}),
+            self.interval_component.to_html(pixel_def=None),
+            html.Div(id="screen-dimensions-div")
+        ], id="app_content")
         self._setup_layout()
         self._register_callbacks()
 
     def _setup_layout(self):
+        if self.setup_done:
+            return
+        pixel_def = self.application.pixel_definitions
+        if pixel_def is None:
+            raise RuntimeError("Pixel Definition error!")
         title = "SAInT: An Interactive Tool for Sensitivity Analysis In The Loop"
         figure = self.application.interactive_plot.figure
         image_loader = ImageLoader()
@@ -35,7 +52,7 @@ class MySAInTDashApplication:
         with pkg_resources.path(dash_app_module, "logo.svg") as logo_svg_filepath:
             logo_src = image_loader.load_svg_from_file(filepath=str(logo_svg_filepath))
         graph = layout.create_graph(figure=figure, id="graph")
-        console = layout.create_console(interval_in_ms=500.0)
+        console = layout.create_console()
         gsa_figure_box = layout.create_gsa_window()
         error_figure_box = layout.create_error_window()
         header = layout.create_header(title=title, logo=logo_src)
@@ -73,7 +90,9 @@ class MySAInTDashApplication:
             layout.create_invisible_div(id="models_trained_info"),
             layout.create_invisible_div(id="models_loaded_info"),
             layout.create_invisible_div(id="settings-app-json-editor-div"),
-            layout.create_invisible_div(id="settings-data-json-editor-div")
+            layout.create_invisible_div(id="settings-data-json-editor-div"),
+            layout.create_invisible_div(id="screen-dimensions-div"),
+            layout.create_invisible_div(id="scan-bias-div")
         ]
 
         div_content = [header,
@@ -81,15 +100,23 @@ class MySAInTDashApplication:
                        self.application.lsa_popup,
                        self.application.feature_selection_popup,
                        *invisible_divs]
+        pixel_def = self.application.pixel_definitions
+        if pixel_def is None:
+            raise RuntimeError("Pixel Definition error!")
         self.app.layout = html.Div([
             layout.create_link(
                 rel="stylesheet",
                 href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
-            ).to_html(),
-            layout.create_div(id="main-content-div", content=div_content, margin="1%").to_html()
-        ])
+            ).to_html(pixel_def),
+            html.Div(id="screen-dimensions", style={"display": "none"}),
+            self.interval_component.to_html(pixel_def),
+            layout.create_div(id="main-content-div", content=div_content, margin="1%").to_html(pixel_def)
+        ], id="app_content")
+        self.setup_done = True
 
     def _register_callbacks(self):
+        if self.registered_callbacks_done:
+            return
         callbacks_to_register = [
             register_data_callback,
             register_model_loading_callback,
@@ -111,11 +138,12 @@ class MySAInTDashApplication:
             register_add_model_callback,
             register_stop_training_callback,
             register_update_app_settings_callback,
-            register_update_data_settings_callback
+            register_update_data_settings_callback,
+            register_scan_bias_callback
         ]
-
         for callback_func in callbacks_to_register:
             callback_func(self.app, self)
+        self.registered_callbacks_done = True
 
     def run(self):
         async def start_server():

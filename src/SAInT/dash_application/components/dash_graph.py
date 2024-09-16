@@ -7,7 +7,7 @@ class DashGraph(DashComponent):
         self.width = width
         self.display_mode_bar = display_mode_bar
 
-    def to_html(self):
+    def to_html(self, pixel_def):
         return dcc.Graph(
             figure=self.figure,
             id=self.id,

@@ -6,7 +6,7 @@ class DashInterval(DashComponent):
         self.interval_in_ms = interval_in_ms
         self.n_intervals = 0
 
-    def to_html(self):
+    def to_html(self, pixel_def):
         return dcc.Interval(
             id=self.id,
             interval=self.interval_in_ms,

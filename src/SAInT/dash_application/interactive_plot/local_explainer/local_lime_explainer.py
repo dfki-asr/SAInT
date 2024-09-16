@@ -1,16 +1,21 @@
 from dash import html
 from timeit import default_timer as timer
 from SAInT.sa.lsa_lime import LocalLimeExplainer
-from SAInT.dash_application.pixel_definitions import lime_height
 from SAInT.dash_application.interactive_plot.common import scale_html
 
 class DashLocalLimeExplainer:
     def __init__(self, application, train_data, do_save):
+        pixel_def = application.pixel_definitions
+        if pixel_def is None:
+            raise RuntimeError("Pixel Definition error!")
+        lime_expl_width = pixel_def.lime_expl_width
+        self.lime_height = pixel_def.lime_height
         self.explainer = LocalLimeExplainer(
             model=application.model_handler.best_model,
             data=train_data,
             data_type="tabular",
-            figure_folder=application.trainer.figure_folder
+            figure_folder=application.trainer.figure_folder,
+            lime_expl_width=lime_expl_width
         )
         self.colors = application.color_palette.to_decimal_list()
         self.do_save = do_save
@@ -43,5 +48,5 @@ class DashLocalLimeExplainer:
         src_lime = self._create_html(explanation)
         return html.Div([
             html.H5("LSA with LIME"),
-            html.Iframe(srcDoc=src_lime, height=lime_height, width="100%")
+            html.Iframe(srcDoc=src_lime, height=self.lime_height, width="100%")
         ])

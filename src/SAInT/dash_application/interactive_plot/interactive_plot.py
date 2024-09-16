@@ -4,7 +4,6 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objs as go
 from plotly.subplots import make_subplots
-from SAInT.dash_application.pixel_definitions import default_figure_height, figure_width, text_font_size, marker_size
 
 class InteractivePlot:
     def __init__(self, application):
@@ -205,6 +204,10 @@ class InteractivePlot:
         marker_symbols_prediction = ["cross", "triangle-up", "star"]
         min_x, min_y, max_x, max_y = None, None, None, None
         traces = []
+        pixel_def = self.application.pixel_definitions
+        if pixel_def is None:
+            raise RuntimeError("Pixel Definition error!")
+        marker_size = pixel_def.marker_size
 
         for idx, (ds_name, df) in enumerate(dfs.items()):
             x_vals = x_values[ds_name]
@@ -254,9 +257,12 @@ class InteractivePlot:
 
     def create_figure(self, application=None, dfs=None, preds=None, x_vals=None, sort_idx=None, do_save=False):
         """Create the main plot figure."""
-        default_height = default_figure_height
         if not application or not dfs:
-            return self._create_default_figure(default_height)
+            return self._create_default_figure(height=476)
+        pixel_def = application.pixel_definitions
+        if pixel_def is None:
+            raise RuntimeError("Pixel Definition error")
+        default_height = pixel_def.default_figure_height
 
         output_names = application.trainer.target_names
         num_rows = len(output_names)
@@ -272,7 +278,7 @@ class InteractivePlot:
             application.model_handler.std_error_str = std_error_str
             showlegend = False
 
-        fontsize = int(text_font_size.replace("px", ""))
+        fontsize = int(pixel_def.text_font_size.replace("px", ""))
         figure.update_layout(
             clickmode='event+select',
             height=figure_height,
@@ -292,7 +298,7 @@ class InteractivePlot:
                 xanchor="center",
                 x=0.5,
             ),
-            width=figure_width,
+            width=pixel_def.figure_width,
             xaxis=dict(showgrid=False, title='', showticklabels=False, showline=False),
             yaxis=dict(showgrid=False, title='', showticklabels=False, showline=False),
             plot_bgcolor='white'

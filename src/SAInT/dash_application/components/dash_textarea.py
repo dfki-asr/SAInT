@@ -1,20 +1,19 @@
 from SAInT.dash_application.dash_component import DashComponent, dcc
-from SAInT.dash_application.pixel_definitions import text_font_size, area_height
 
 class DashTextarea(DashComponent):
     def __init__(self, id, default_value: str = ""):
         super().__init__(id=id)
         self.default_value = default_value
-        self.fontsize = text_font_size
         self.width = "100%"
-        self.height = area_height
 
-    def to_html(self):
+    def to_html(self, pixel_def):
+        fontsize = pixel_def.text_font_size
+        height = pixel_def.area_height
         return dcc.Textarea(id=self.id,
             value=self.default_value,
             readOnly=True,
             style={
                 "width": self.width,
-                "height": self.height,
-                "font-size": self.fontsize
+                "height": height,
+                "font-size": fontsize
             })

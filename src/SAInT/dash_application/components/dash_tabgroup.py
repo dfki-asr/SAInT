@@ -5,8 +5,8 @@ class DashTabGroup(DashComponent):
         super().__init__(id=id)
         self.tabs = tabs
 
-    def to_html(self):
-        content = [tab.to_html() for tab in self.tabs]
+    def to_html(self, pixel_def):
+        content = [tab.to_html(pixel_def) for tab in self.tabs]
         return dbc.Tabs(content,
                         style={"display": "flex",
                                "justify-content": "flex-begin",

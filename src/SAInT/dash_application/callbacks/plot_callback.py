@@ -4,7 +4,6 @@ mpl.rcParams["hatch.linewidth"] = 0.3
 import matplotlib.pyplot as plt
 from SAInT.dash_application.common.dash_functions import get_pressed_buttons
 from SAInT.dash_application.common.image_loader import ImageLoader
-from SAInT.dash_application.pixel_definitions import error_plot_width, error_plot_height, text_font_size
 
 def register_plot_callback(dash_app, app):
     @dash_app.callback(
@@ -173,6 +172,12 @@ def _create_error_plot_and_string(app):
             fontsize = max_fontsize - (max_fontsize - min_fontsize) * ((x - min_items) / (max_items - min_items))
             return int(fontsize)
 
+        pixel_def = app.application.pixel_definitions
+        if pixel_def is None:
+            raise RuntimeError("Pixel Definition error!")
+        text_font_size = pixel_def.text_font_size
+        error_plot_width = pixel_def.error_plot_width
+        error_plot_height = pixel_def.error_plot_height
         plt.figure(figsize=(16, 8))
         # Define hatches to differentiate bars
         hatches = ['/', 'o', '-', '\\', '.', '+', 'x', 'O', '|', '*']

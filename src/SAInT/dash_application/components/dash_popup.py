@@ -1,11 +1,9 @@
 from SAInT.dash_application.dash_component import DashComponent, dbc, html
 from SAInT.dash_application.components import DashIconButton, DashRadioButton
-from SAInT.dash_application.pixel_definitions import popup_font_size
 
 class DashPopup(DashComponent):
     def __init__(self, title: str, id_popup: str, id_window: str, id_close: str, id_save: str = None, fullscreen: bool = True):
         super().__init__(id=id_popup)
-        self.fontsize = popup_font_size
         self.title = title
         self.id_popup = id_popup
         self.id_window = id_window
@@ -31,8 +29,9 @@ class DashPopup(DashComponent):
     def get_content(self):
         return self.window
 
-    def to_html(self):
-        close_button = DashIconButton(label="", class_name="fa fa-times", id=self.id_close).to_html()
+    def to_html(self, pixel_def):
+        fontsize = pixel_def.popup_font_size
+        close_button = DashIconButton(label="", class_name="fa fa-times", id=self.id_close).to_html(pixel_def)
         title = html.Div([self.title], style={"flex": "1", "textAlign": "left"})
         button = html.Div([close_button], style={"flex": "0", "textAlign": "right"})
         header_content = html.Div([title, button],
@@ -48,9 +47,9 @@ class DashPopup(DashComponent):
                                                     options=["normalized", "denormalized"],
                                                     default_value="denormalized",
                                                     id="norm_denorm_radiobutton")
-            footer.append(de_normalization_radio_buttons.to_html())
+            footer.append(de_normalization_radio_buttons.to_html(pixel_def))
         if self.id_save:
-            save_button = DashIconButton(label="Save", class_name="fa fa-floppy-o", id=self.id_save).to_html()
+            save_button = DashIconButton(label="Save", class_name="fa fa-floppy-o", id=self.id_save).to_html(pixel_def)
             footer.append(save_button)
         if len(footer) != 0:
             content.append(
@@ -65,7 +64,7 @@ class DashPopup(DashComponent):
             keyboard=False,
             backdrop="static",
             style={
-                "font-size": self.fontsize,
+                "font-size": fontsize,
                 "display": "flex",
                 "alignItems": "center",
                 "justifyContent": "center",

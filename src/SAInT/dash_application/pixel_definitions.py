@@ -1,27 +1,64 @@
-# absolute
-text_font_size = "12px"
-popup_font_size = "14px"
-border_line = "0.5px solid #000"
-border_radius = "7px"
-margin = "15px"
-padding = "7px"
+class PixelDefinitions:
+    def __init__(self, width, height):
+        self.width = width
+        self.height = height
+        self.text_font_size = "12px"
+        self.popup_font_size = "14px"
+        self.border_line = "0.5px solid #000"
+        self.border_radius = "7px"
+        self.margin = "15px"
+        self.padding = "7px"
+        self.logo_height = "6.5%"
+        self.lime_expl_width = "65%"
+        self.tab_gap = "1.443%"
 
-# relative
-logo_height = "6.5%"
-lime_expl_width = "65%"
-tab_gap = "1.443%"
+    def calc_rel_size(self, ref_value, percentage, unit):
+        result = int(ref_value / 100 * percentage)
+        if unit == "px":
+            return f"{result}px"
+        else:
+            return result
 
-width = 1386
-height = 768
+    @property
+    def title_font_size(self):
+        return self.calc_rel_size(self.width, 1.985, "px")
 
-title_font_size = f"{int(width / 100 * 1.985)}px"
-feature_popup_width = f"{int(width / 100 * 30)}px"
-area_height = f"{int(height / 100 * 25)}px"
-editor_window_height = f"{int(height / 100 * 70)}px"
-figure_width = int(width / 100 * 93)
-default_figure_height = int(height / 100 * 62)
-marker_size = int(width / 100 * 0.8)
-lime_height = f"{int(height / 100 * 32)}px"
-shap_height = f"{int(height / 100 * 22)}px"
-error_plot_height = f"{int(height / 100 * 15)}px"
-error_plot_width = f"{int(width / 100 * 50)}px"
+    @property
+    def feature_popup_width(self):
+        return self.calc_rel_size(self.width, 30, "px")
+
+    @property
+    def error_plot_width(self):
+        return self.calc_rel_size(self.width, 50, "px")
+
+    @property
+    def figure_width(self):
+        return self.calc_rel_size(self.width, 93, "-")
+
+    @property
+    def marker_size(self):
+        return self.calc_rel_size(self.width, 0.8, "-")
+
+    @property
+    def area_height(self):
+        return self.calc_rel_size(self.height, 25, "px")
+
+    @property
+    def editor_window_height(self):
+        return self.calc_rel_size(self.height, 70, "px")
+
+    @property
+    def lime_height(self):
+        return self.calc_rel_size(self.height, 32, "px")
+
+    @property
+    def shap_height(self):
+        return self.calc_rel_size(self.height, 22, "px")
+
+    @property
+    def error_plot_height(self):
+        return self.calc_rel_size(self.height, 15, "px")
+
+    @property
+    def default_figure_height(self):
+        return self.calc_rel_size(self.height, 62, "-")

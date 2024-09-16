@@ -5,5 +5,5 @@ class DashComponent:
     def __init__(self, id):
         self.id = id
 
-    def to_html(self):
+    def to_html(self, pixel_def):
         pass

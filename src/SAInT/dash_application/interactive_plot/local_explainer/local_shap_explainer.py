@@ -1,11 +1,14 @@
 from dash import html
 from timeit import default_timer as timer
 from SAInT.sa.lsa_shap import LocalShapExplainer
-from SAInT.dash_application.pixel_definitions import shap_height
 from SAInT.dash_application.interactive_plot.common import scale_html
 
 class DashLocalShapExplainer:
     def __init__(self, application, train_data, do_save):
+        pixel_def = application.pixel_definitions
+        if pixel_def is None:
+            raise RuntimeError("Pixel Definition error!")
+        self.shap_height = pixel_def.shap_height
         self.nsamples = 100
         self.explainer = LocalShapExplainer(
             model=application.model_handler.best_model,
@@ -40,5 +43,5 @@ class DashLocalShapExplainer:
         src_shap = self._create_html(explanation, sample_dict)
         return html.Div([
             html.H5("LSA with SHAP"),
-            html.Iframe(srcDoc=src_shap, height=shap_height, width="100%")
+            html.Iframe(srcDoc=src_shap, height=self.shap_height, width="100%")
         ])

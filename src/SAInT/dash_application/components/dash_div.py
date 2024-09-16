@@ -1,5 +1,4 @@
 from SAInT.dash_application.dash_component import DashComponent, html
-from SAInT.dash_application.pixel_definitions import text_font_size
 
 class DashDiv(DashComponent):
     def __init__(self, id,
@@ -11,22 +10,22 @@ class DashDiv(DashComponent):
                  gap: str = None):
         super().__init__(id=id)
         self.content = content
-        self.fontsize = text_font_size
         self.width = width
         self.margin = margin
         self.visible = visible
         self.inline = inline
         self.gap = gap
 
-    def to_html(self):
-        content = [item.to_html() for item in self.content]
+    def to_html(self, pixel_def):
+        fontsize = pixel_def.text_font_size
+        content = [item.to_html(pixel_def) for item in self.content]
         style = {}
         if self.width is not None:
             style["width"] = self.width
         if self.margin is not None:
             style["margin"] = self.margin
-        if self.fontsize is not None:
-            style["font-size"] = self.fontsize
+        if fontsize is not None:
+            style["font-size"] = fontsize
         if self.visible is False:
             style["display"] = "none"
         elif self.inline:  # Apply flexbox if inline is True

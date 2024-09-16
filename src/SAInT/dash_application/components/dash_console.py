@@ -1,26 +1,20 @@
 from SAInT.dash_application.dash_component import DashComponent, html, dcc
 from SAInT.dash_application.components.dash_icon_button import DashIconButton
-from SAInT.dash_application.components.dash_interval import DashInterval
-from SAInT.dash_application.pixel_definitions import text_font_size
-from SAInT.dash_application.pixel_definitions import editor_window_height
 
 class DashConsole(DashComponent):
-    def __init__(self, interval_in_ms: float = 500.0):
+    def __init__(self):
         super().__init__(id="output_textarea")
         self.name = "Console"
         self.default_value = ""
-        self.fontsize = text_font_size
         self.width = "100%"
-        self.height = editor_window_height
         self.clear_button = DashIconButton(
             label="Clear console",
             class_name="fa fa-times",
             id="clear_console_button")
-        self.interval_component = DashInterval(
-            interval_in_ms=interval_in_ms,
-            id="interval_component")
 
-    def to_html(self):
+    def to_html(self, pixel_def):
+        fontsize = pixel_def.text_font_size
+        height = pixel_def.editor_window_height
         return html.Div([
         html.H6(self.name),
         dcc.Textarea(id=self.id,
@@ -28,9 +22,8 @@ class DashConsole(DashComponent):
                     readOnly=True,
                     style={
                         "width": self.width,
-                        "height": self.height,
-                        "font-size": self.fontsize
+                        "height": height,
+                        "font-size": fontsize
                     }),
-        self.interval_component.to_html(),
-        self.clear_button.to_html()
+        self.clear_button.to_html(pixel_def)
     ])

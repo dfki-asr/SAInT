@@ -1,15 +1,15 @@
 from SAInT.dash_application.dash_component import DashComponent, html, dbc
-from SAInT.dash_application.pixel_definitions import text_font_size, border_line, border_radius, padding
 
 class DashButton(DashComponent):
     def __init__(self, content, id):
         super().__init__(id=id)
         self.content = content
-        self.fontsize = text_font_size
-        self.border_line = border_line
-        self.border_radius = border_radius
 
-    def to_html(self):
+    def to_html(self, pixel_def):
+        fontsize = pixel_def.text_font_size
+        border_line = pixel_def.border_line
+        border_radius = pixel_def.border_radius
+        padding = pixel_def.padding
         content = self.content
         if len(content) > 1:
             class_name, label = content
@@ -17,9 +17,9 @@ class DashButton(DashComponent):
         return dbc.Button(content,
             id=self.id,
             color="secondary",
-            style={"font-size": self.fontsize,
-                   "border": self.border_line,
-                   "border-radius": self.border_radius,
+            style={"font-size": fontsize,
+                   "border": border_line,
+                   "border-radius": border_radius,
                    "line-height": "1.2",
                    "padding": padding
                    },

@@ -1,15 +1,14 @@
 from SAInT.dash_application.dash_component import DashComponent, html, dbc
-from SAInT.dash_application.pixel_definitions import text_font_size
 
 class DashInput(DashComponent):
     def __init__(self, id, name: str = "", default_value: str = "", width: str = "100%"):
         super().__init__(id=id)
         self.name = name
         self.default_value = default_value
-        self.fontsize = text_font_size
         self.width = width
 
-    def to_html(self):
+    def to_html(self, pixel_def):
+        fontsize = pixel_def.text_font_size
         content = []
         if self.name != "":
             content.append(html.H6(self.name))
@@ -19,7 +18,7 @@ class DashInput(DashComponent):
                       debounce=True,
                       style={
                         "width": self.width,
-                        "font-size": self.fontsize
+                        "font-size": fontsize
                       }
         )]
-        return html.Div(content, style={"font-size": self.fontsize})
+        return html.Div(content, style={"font-size": fontsize})

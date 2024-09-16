@@ -6,5 +6,5 @@ class DashHeading(DashComponent):
         super().__init__(id=id)
         self.title = title
 
-    def to_html(self):
+    def to_html(self, pixel_def):
         return html.H6(self.title)
