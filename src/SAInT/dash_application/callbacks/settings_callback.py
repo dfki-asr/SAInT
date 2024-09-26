@@ -61,14 +61,14 @@ def _handle_save_settings(app, n_clicks):
     return ""
 
 def _handle_update_app_settings(app, value):
-    if "settings-app-json-editor.value" in get_pressed_buttons() and app.application.trainer:
+    if "settings-app-json-editor.value" in get_pressed_buttons() and app.application.trainer and value:
         print("CHANGED APP SETTINGS.")
         new_settings = json_to_app_settings(value)
         app.application.settings = new_settings
     return ""
 
 def _handle_update_data_settings(app, value):
-    if "settings-data-json-editor.value" in get_pressed_buttons() and app.application.trainer:
+    if "settings-data-json-editor.value" in get_pressed_buttons() and app.application.trainer and value:
         print("CHANGED DATA SETTINGS.")
         new_settings = json_to_data_settings(value)
         app.application.trainer.data_settings = new_settings
