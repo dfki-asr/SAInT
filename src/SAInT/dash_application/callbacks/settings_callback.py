@@ -47,8 +47,12 @@ def _handle_load_settings(app):
         app_settings = app.data_handler.load_app_settings(app_settings_file)
         app.application.settings = app_settings
         data_settings = app.application.trainer.data_settings
-        settings_app_string = str(app_settings_to_json(app_settings))
-        settings_data_string = str(app.data_handler.data_settings_to_json(data_settings))
+        settings_app_string = ""
+        settings_data_string = ""
+        if app_settings:
+            settings_app_string = str(app_settings_to_json(app_settings))
+        if data_settings:
+            settings_data_string = str(app.data_handler.data_settings_to_json(data_settings))
         return settings_app_string, settings_data_string
     return "", ""
 
@@ -62,21 +66,22 @@ def _handle_save_settings(app, n_clicks):
 
 def _handle_update_app_settings(app, value):
     if "settings-app-json-editor.value" in get_pressed_buttons() and app.application.trainer and value:
-        print("CHANGED APP SETTINGS.")
-        new_settings = json_to_app_settings(value)
-        app.application.settings = new_settings
+        if app.application.settings:
+            new_settings = json_to_app_settings(value)
+            app.application.settings = new_settings
     return ""
 
 def _handle_update_data_settings(app, value):
     if "settings-data-json-editor.value" in get_pressed_buttons() and app.application.trainer and value:
-        print("CHANGED DATA SETTINGS.")
-        new_settings = json_to_data_settings(value)
-        app.application.trainer.data_settings = new_settings
+        if app.application.trainer.data_settings:
+            new_settings = json_to_data_settings(value)
+            app.application.trainer.data_settings = new_settings
     return ""
 
 def _save_app_settings(app, folder_path):
     settings_file = f"{folder_path}/app_settings.json"
-    app.data_handler.save_app_settings(app.application.settings, settings_file)
+    if app.data_handler:
+        app.data_handler.save_app_settings(app.application.settings, settings_file)
 
 def _save_data_settings(app, folder_path):
     settings_file = f"{folder_path}/data_settings.json"

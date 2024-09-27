@@ -323,23 +323,24 @@ class InteractivePlot:
             return list(range(df.shape[0]))
 
         if application.trainer:
-            data_mode_dict = {
-                "train": application.trainer.dataloader.train,
-                "valid": application.trainer.dataloader.valid,
-                "test": application.trainer.dataloader.test
-            }
+            if application.trainer.dataloader:
+                data_mode_dict = {
+                    "train": application.trainer.dataloader.train,
+                    "valid": application.trainer.dataloader.valid,
+                    "test": application.trainer.dataloader.test
+                }
 
-            sort_idx = self._get_sort_idx()
-            dfs, preds, x_vals = {}, {}, {}
+                sort_idx = self._get_sort_idx()
+                dfs, preds, x_vals = {}, {}, {}
 
-            for ds_to_show in application.show_datasets_in_plot:
-                dataset = data_mode_dict.get(ds_to_show)
-                if dataset:
-                    dfs[ds_to_show] = dataset.tabular_pd
-                    preds[ds_to_show] = self._get_predictions(application, dataset.tabular_pd)
-                    x_vals[ds_to_show] = get_x_values(dataset.dataframe)
+                for ds_to_show in application.show_datasets_in_plot:
+                    dataset = data_mode_dict.get(ds_to_show)
+                    if dataset:
+                        dfs[ds_to_show] = dataset.tabular_pd
+                        preds[ds_to_show] = self._get_predictions(application, dataset.tabular_pd)
+                        x_vals[ds_to_show] = get_x_values(dataset.dataframe)
 
-            self.figure = self.create_figure(application, dfs, preds, x_vals, sort_idx)
+                self.figure = self.create_figure(application, dfs, preds, x_vals, sort_idx)
 
     def get_clicked_sample_dict(self, application, selected_data) -> dict:
         """Get data for the clicked sample."""

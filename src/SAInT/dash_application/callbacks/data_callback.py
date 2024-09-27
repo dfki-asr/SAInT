@@ -24,22 +24,32 @@ def register_data_callback(dash_app, app):
             app.data_handler.load_data()
 
         data_radiobutton_options = ["train", "valid", "test"]
-        if app.application.trainer is not None:
-            dataset_dict = app.application.trainer.dataloader.datasets
-            dataset_names = [mode for mode, dataset in dataset_dict.items() if dataset is not None]
-            data_radiobutton_options = [mode for mode in dataset_names if dataset_dict[mode].num_samples > 0]
-
-        interactive_plot = app.application.interactive_plot
-        sort_criterion_radiobutton_value = interactive_plot.sort_criterion or "no sorting"
-        data_radiobutton_value = interactive_plot.dataset_selection or ""
-        show_feature_details_value = "True" if interactive_plot.show_feature_details else "False"
-
-        loss_radiobutton_value = app.application.trainer.data_settings.metric if app.application.trainer else "mae"
+        sort_criterion_radiobutton_value = "no sorting"
+        data_radiobutton_value = ""
+        show_feature_details_value = "False"
+        loss_radiobutton_value = "mae"
         goodness_of_fit_value = "False"
+        update_panel_from_settings = "False"
+        loaded_data = "False"
 
-        update_panel_from_settings = "True"
-        loaded_data = "True"
-        data_info = app.data_handler.get_data_info()
+        if app.data_handler is not None:
+            if app.application is not None:
+                interactive_plot = app.application.interactive_plot
+                if interactive_plot is not None:
+                    sort_criterion_radiobutton_value = interactive_plot.sort_criterion
+                    data_radiobutton_value = interactive_plot.dataset_selection
+                    show_feature_details_value = "True" if interactive_plot.show_feature_details else "False"
+            if app.application.trainer is not None:
+                if app.application.trainer.data_settings is not None:
+                    loss_radiobutton_value = app.application.trainer.data_settings.metric
+                if app.application.trainer.dataloader is not None:
+                    dataset_dict = app.application.trainer.dataloader.datasets
+                    dataset_names = [mode for mode, dataset in dataset_dict.items() if dataset is not None]
+                    data_radiobutton_options = [mode for mode in dataset_names if dataset_dict[mode].num_samples > 0]
+
+                    data_info = app.data_handler.get_data_info()
+                    update_panel_from_settings = "True"
+                    loaded_data = "True"
 
         return (
             sort_criterion_radiobutton_value,

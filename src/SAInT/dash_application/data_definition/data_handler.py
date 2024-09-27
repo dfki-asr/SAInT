@@ -235,16 +235,18 @@ class DataHandler:
     def load_data(self):
         """Load data using the settings specified in the application."""
         start = timer()
-        self.application.trainer.load_data(
-            procs=self.application.settings.procs,
-            do_one_hot_encoding=self.application.settings.do_one_hot_encoding,
-            dtype=self.application.settings.dtype,
-            valid_frac=float(self.application.settings.valid_frac),
-            test_frac=float(self.application.settings.test_frac)
-        )
-        if self.application.trainer.data_settings.verbose:
-            self.create_histograms(do_save=True, do_show=False)
-        print(f"load data took {(timer() - start):.2f} s.")
+        if self.application.trainer and self.application.settings:
+            self.application.trainer.load_data(
+                procs=self.application.settings.procs,
+                do_one_hot_encoding=self.application.settings.do_one_hot_encoding,
+                dtype=self.application.settings.dtype,
+                valid_frac=float(self.application.settings.valid_frac),
+                test_frac=float(self.application.settings.test_frac)
+            )
+            if self.application.trainer.data_settings:
+                if self.application.trainer.data_settings.verbose:
+                    self.create_histograms(do_save=True, do_show=False)
+            print(f"load data took {(timer() - start):.2f} s.")
 
     def create_histograms(self, do_save: bool = True, do_show: bool = True):
         """Create histograms of the data."""

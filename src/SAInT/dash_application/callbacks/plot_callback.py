@@ -54,7 +54,8 @@ def register_plot_callback(dash_app, app):
 
 def _update_trainer_metric(app, loss_selection):
     if app.application.trainer is not None:
-        app.application.trainer.data_settings = app.application.trainer.data_settings._replace(metric=loss_selection)
+        if app.application.trainer.data_settings is not None:
+            app.application.trainer.data_settings = app.application.trainer.data_settings._replace(metric=loss_selection)
 
 def _handle_data_radiobutton_change(app):
     app.application.model_handler.compute_errors()
