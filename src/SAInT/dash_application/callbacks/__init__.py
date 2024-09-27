@@ -13,7 +13,7 @@ from SAInT.dash_application.callbacks.settings_callback import register_load_set
 from SAInT.dash_application.callbacks.model_callback import register_model_loading_callback, register_model_loaded_or_trained_callback
 from SAInT.dash_application.callbacks.data_callback import register_data_callback
 from SAInT.dash_application.callbacks.automatic_callback import register_auto_compute_error_callback, \
-    register_auto_gsa_callback, register_auto_load_data_folder_callback
+    register_auto_gsa_callback, register_auto_load_data_folder_callback, register_auto_reloaddata_callback
 from SAInT.dash_application.callbacks.stop_training_callback import register_stop_training_callback
 from SAInT.dash_application.callbacks.screen_resolution_callback import register_screen_resolution_callback
 from SAInT.dash_application.callbacks.scan_callback import register_scan_bias_callback
@@ -32,5 +32,5 @@ __all__ = [
     "register_data_callback", "register_auto_compute_error_callback",
     "register_auto_gsa_callback", "register_auto_load_data_folder_callback",
     "register_stop_training_callback", "register_screen_resolution_callback",
-    "register_scan_bias_callback"
+    "register_scan_bias_callback", "register_auto_reloaddata_callback"
 ]

@@ -120,11 +120,15 @@ def create_tabs(console, graph,
         ]
     data_buttons_group = create_button_group(data_button_list, id="data_button_group")
 
+    data_invisible_buttons_list = [ DashIconButton(label="Load Data", class_name="fa fa-search", id="trigger_load_data_button")]
+    data_invisible_buttons_div = DashDiv(id="data_invisible_buttons_div", content=data_invisible_buttons_list, visible=False)
+
     data_textfield = DashTextarea(id="folder_path_info")
     data_tab_content = [
         data_buttons_group,
         DashNewline(),
-        data_textfield
+        data_textfield,
+        data_invisible_buttons_div
     ]
 
     model_load_button_list = [

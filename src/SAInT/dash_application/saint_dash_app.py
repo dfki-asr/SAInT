@@ -80,7 +80,7 @@ class MySAInTDashApplication:
         invisible_divs = [
             layout.create_invisible_div(id="update_panel_from_settings"),
             layout.create_invisible_div(id="loaded_data_settings"),
-            layout.create_invisible_div(id="trigger_load_data"),
+            layout.create_invisible_div(id="trigger_load_data_after_feature_selection"),
             layout.create_invisible_div(id="loaded_data"),
             layout.create_invisible_div(id="models_trained_info"),
             layout.create_invisible_div(id="models_loaded_info"),
@@ -134,7 +134,8 @@ class MySAInTDashApplication:
             register_stop_training_callback,
             register_update_app_settings_callback,
             register_update_data_settings_callback,
-            register_screen_resolution_callback
+            register_screen_resolution_callback,
+            register_auto_reloaddata_callback
         ]
         for callback_func in callbacks_to_register:
             callback_func(self.app, self)

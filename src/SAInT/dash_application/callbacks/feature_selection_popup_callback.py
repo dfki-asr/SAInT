@@ -3,7 +3,7 @@ from SAInT.dash_application.common.dash_functions import get_pressed_buttons
 
 def register_close_feature_selection_popup_callback(dash_app, app):
     @dash_app.callback(
-        Output("trigger_load_data", "children"),
+        Output("trigger_load_data_after_feature_selection", "children"),
         Input("save_outputnames_button", "n_clicks"),
         Input("close_feature_selection_popup", "n_clicks"),
         prevent_initial_call=True
