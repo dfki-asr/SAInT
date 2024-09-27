@@ -31,11 +31,6 @@ class MySAInTDashApplication:
         self.registered_callbacks_done = False
         self.interval_component = DashInterval(interval_in_ms=500.0, id="interval_component")
         # Initial basic layout to include the necessary components
-        self.app.layout = html.Div([
-            html.Div(id="screen-dimensions", style={"display": "none"}),
-            self.interval_component.to_html(pixel_def=None),
-            html.Div(id="screen-dimensions-div")
-        ], id="app_content")
         self._setup_layout()
         self._register_callbacks()
 
@@ -139,7 +134,7 @@ class MySAInTDashApplication:
             register_stop_training_callback,
             register_update_app_settings_callback,
             register_update_data_settings_callback,
-            register_scan_bias_callback
+            register_screen_resolution_callback
         ]
         for callback_func in callbacks_to_register:
             callback_func(self.app, self)

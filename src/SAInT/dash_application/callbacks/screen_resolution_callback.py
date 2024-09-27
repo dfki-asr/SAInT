@@ -1,4 +1,4 @@
-from dash import Input, Output
+from dash import html, Input, Output
 from dash.exceptions import PreventUpdate
 from SAInT.dash_application.pixel_definitions import PixelDefinitions
 
@@ -15,26 +15,28 @@ def register_screen_resolution_callback(dash_app, app):
         }
         """,
         Output("screen-dimensions", "children"),
-        Input("interval_component", "n_intervals") # TODO
+        Input("interval_component", "n_intervals")
     )
 
     @dash_app.callback(
-        Output("app_content", "children"),
+        Output("screen-dimensions-div", "children"),
         Input("screen-dimensions", "children")
     )
     def update_screen_resolution(screen_dims):
-        if screen_dims:
-            width = screen_dims["width"]
-            height = screen_dims["height"]
-            # If screen dimensions have changed, update layout
-            if app.current_screen_dims != screen_dims:
-                app.current_screen_dims = screen_dims
-                app.application.pixel_definitions = PixelDefinitions(width=width, height=height)
-                app._setup_layout()
-                app._register_callbacks()
-                layout = app.app.layout
-                return layout
-            layout = app.app.layout
-            return layout
-            #raise PreventUpdate
-        return "Waiting for screen dimensions..."
+        # If screen dimensions are not available, prevent update
+        if screen_dims is None:
+            raise PreventUpdate
+        # Extract width and height from screen dimensions
+        width = screen_dims.get("width")
+        height = screen_dims.get("height")
+        # Validate screen dimensions
+        if width is None or height is None:
+            raise PreventUpdate
+        # If the dimensions are uninitialized or have changed, update them
+        if app.current_screen_dims is None or app.current_screen_dims != screen_dims:
+            app.current_screen_dims = screen_dims
+            app.application.pixel_definitions = PixelDefinitions(width=width, height=height)
+            print(f"Update layout: {width} x {height}")
+            return html.Div(f"Screen dimensions: {width} x {height}")
+        # If no change in dimensions, prevent update
+        raise PreventUpdate
