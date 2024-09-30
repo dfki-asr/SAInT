@@ -23,7 +23,7 @@ def register_auto_compute_error_callback(dash_app, app):
 def register_auto_gsa_callback(dash_app, app):
     @dash_app.callback(Output("gsa_best_model_button", "n_clicks"),
                         Input("best_model_info", "value"),
-                        prevent_initial_call=True)
+                        prevent_initial_call=False)
     def auto_perform_gsa(best_model_info_value):
         changed_id = get_pressed_buttons()
         if "best_model_info.value" in changed_id:
