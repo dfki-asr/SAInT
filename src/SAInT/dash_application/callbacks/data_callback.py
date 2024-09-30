@@ -52,6 +52,7 @@ def _handle_data_update(app,
                 sort_criterion_radiobutton_value = interactive_plot.sort_criterion
                 data_radiobutton_value = interactive_plot.dataset_selection
                 show_feature_details_value = "True" if interactive_plot.show_feature_details else "False"
+                goodness_of_fit_value = "True" if interactive_plot.goodness_of_fit else "False"
         if app.application.trainer is not None:
             if app.application.trainer.data_settings is not None:
                 loss_radiobutton_value = app.application.trainer.data_settings.metric
