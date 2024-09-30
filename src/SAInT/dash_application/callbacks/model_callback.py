@@ -1,4 +1,5 @@
 from dash import Input, Output
+from dash.exceptions import PreventUpdate
 from SAInT.dash_application.common.dash_functions import get_pressed_buttons
 
 def register_model_loading_callback(dash_app, app):
@@ -38,6 +39,8 @@ def register_model_loaded_or_trained_callback(dash_app, app):
             return ""
 
         model_names_str = "\n".join(app.application.trainer.models.keys())
+        if len(app.application.trainer.models) == 0:
+            raise PreventUpdate
         models_info = f"{len(app.application.trainer.models)} Models: {app.application.trainer.model_folder}:\n\n{model_names_str}"
         return models_info
 
