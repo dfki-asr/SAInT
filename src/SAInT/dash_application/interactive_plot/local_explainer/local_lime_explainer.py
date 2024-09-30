@@ -47,6 +47,6 @@ class DashLocalLimeExplainer:
                                    output_idx=sample_dict["output_idx"])
         src_lime = self._create_html(explanation)
         return html.Div([
-            html.H5("LSA with LIME"),
+            html.H6("LSA with LIME"),
             html.Iframe(srcDoc=src_lime, height=self.lime_height, width="100%")
         ])

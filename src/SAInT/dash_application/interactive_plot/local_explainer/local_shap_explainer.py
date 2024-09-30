@@ -42,6 +42,6 @@ class DashLocalShapExplainer:
         explanation = self.explain(x=sample_dict["x"])
         src_shap = self._create_html(explanation, sample_dict)
         return html.Div([
-            html.H5("LSA with SHAP"),
+            html.H6("LSA with SHAP"),
             html.Iframe(srcDoc=src_shap, height=self.shap_height, width="100%")
         ])

@@ -25,7 +25,7 @@ def _perform_gsa_analysis(app):
     gsa_src = global_explainer.explain(method="fast", colors=colors, do_save=True)
     if gsa_src:
         app.application.gsa_figure = [
-            html.H4("Global Sensitivity Analysis (GSA)"),
+            html.H6("Global Sensitivity Analysis (GSA)"),
             html.Img(src=gsa_src, width="40%")
         ]
     app.application.model_handler.best_model_was_changed = False
