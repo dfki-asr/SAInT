@@ -37,10 +37,13 @@ def register_auto_gsa_callback(dash_app, app):
 def register_auto_reloaddata_callback(dash_app, app):
     @dash_app.callback(Output("trigger_load_data_button", "n_clicks"),
                         Input("gsa_best_model_button", "n_clicks"),
-                        prevent_initial_call=True)
-    def auto_perform_reloaddata(n_clicks):
+                        Input("screen-dimensions-div", "children"),
+                        prevent_initial_call=False)
+    def auto_perform_reloaddata(n_clicks, screendims):
         changed_id = get_pressed_buttons()
-        if "gsa_best_model_button.n_clicks" in changed_id:
+        if "screen-dimensions-div.children" in changed_id:
+            app._setup_layout()
+        if "gsa_best_model_button.n_clicks" in changed_id or "screen-dimensions-div.children" in changed_id:
             if app.application.trainer is not None:
                 if app.application.trainer.dataloader is not None:
                     return 1

@@ -35,8 +35,6 @@ class MySAInTDashApplication:
         self._register_callbacks()
 
     def _setup_layout(self):
-        if self.setup_done:
-            return
         pixel_def = self.application.pixel_definitions
         if pixel_def is None:
             raise RuntimeError("Pixel Definition error!")
