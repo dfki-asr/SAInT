@@ -71,6 +71,18 @@ class DashLocalExplainer:
         self.application.lsa_popup.set_content(body)
         self.application.lsa_popup.open()
 
+    def create_explainer_instances(self):
+        dls_train = self.application.trainer.dataloader.dls_train
+        train_data = np.array(dls_train.xs.values, dtype=np.float32)
+        if self.local_lime_explainer is None:
+            self.local_lime_explainer = DashLocalLimeExplainer(application=self.application,
+                                                               train_data=train_data,
+                                                               do_save=self.do_save)
+        if self.local_shap_explainer is None:
+            self.local_shap_explainer = DashLocalShapExplainer(application=self.application,
+                                                               train_data=dls_train,
+                                                               do_save=self.do_save)
+
     def scan_and_filter_samples(self, explanation_type="lime"):
         """
         Scans and filters samples that contain sensitive features in their explanations.
@@ -79,21 +91,14 @@ class DashLocalExplainer:
         :param explanation_type: "lime" or "shap" to specify which explainer to use.
         :return: List of samples that do not have sensitive features in the top features.
         """
+        self.create_explainer_instances()
+
         filtered_samples = []
-        dls_train = self.application.trainer.dataloader.dls_train
-        train_data = np.array(dls_train.xs.values, dtype=np.float32)
         input_names = self.application.trainer.dataloader.valid.input_names
         output_names = self.application.trainer.dataloader.valid.output_names
         num_outputs = len(output_names)
         dataframes = { "valid": self.application.trainer.dataloader.valid.dataframe,
                       "test": self.application.trainer.dataloader.test.dataframe }
-
-        self.local_lime_explainer = DashLocalLimeExplainer(application=self.application,
-                                                           train_data=train_data,
-                                                           do_save=self.do_save)
-        self.local_shap_explainer = DashLocalShapExplainer(application=self.application,
-                                                           train_data=dls_train,
-                                                           do_save=self.do_save)
 
         for dataset_name, df in dataframes.items():
             f = df[input_names]

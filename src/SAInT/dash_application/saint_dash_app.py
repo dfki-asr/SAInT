@@ -87,7 +87,8 @@ class MySAInTDashApplication:
             layout.create_invisible_div(id="settings-app-json-editor-div"),
             layout.create_invisible_div(id="settings-data-json-editor-div"),
             layout.create_invisible_div(id="screen-dimensions-div"),
-            layout.create_invisible_div(id="scan-bias-div")
+            layout.create_invisible_div(id="scan-bias-div"),
+            layout.create_invisible_div(id="create-lsa-explainers-div")
         ]
 
         div_content = [header,
@@ -135,7 +136,8 @@ class MySAInTDashApplication:
             register_update_app_settings_callback,
             register_update_data_settings_callback,
             register_screen_resolution_callback,
-            register_auto_reloaddata_callback
+            register_auto_reloaddata_callback,
+            register_create_local_explainers_callback
         ]
         for callback_func in callbacks_to_register:
             callback_func(self.app, self)

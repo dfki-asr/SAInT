@@ -3,7 +3,8 @@ from SAInT.dash_application.callbacks.console_callback import register_console_c
 from SAInT.dash_application.callbacks.feature_selection_popup_callback import register_open_feature_selection_popup_callback, \
     register_close_feature_selection_popup_callback
 from SAInT.dash_application.callbacks.gsa_callback import register_gsa_callback
-from SAInT.dash_application.callbacks.local_explain_callback import register_update_local_explain_callback
+from SAInT.dash_application.callbacks.local_explain_callback import register_update_local_explain_callback, \
+    register_create_local_explainers_callback
 from SAInT.dash_application.callbacks.lsa_popup_callback import register_lsa_popup_callback
 from SAInT.dash_application.callbacks.model_config_callback import register_model_configuration_callback
 from SAInT.dash_application.callbacks.plot_callback import register_plot_callback
@@ -32,5 +33,6 @@ __all__ = [
     "register_data_callback", "register_auto_compute_error_callback",
     "register_auto_gsa_callback", "register_auto_load_data_folder_callback",
     "register_stop_training_callback", "register_screen_resolution_callback",
-    "register_scan_bias_callback", "register_auto_reloaddata_callback"
+    "register_scan_bias_callback", "register_auto_reloaddata_callback",
+    "register_create_local_explainers_callback"
 ]
