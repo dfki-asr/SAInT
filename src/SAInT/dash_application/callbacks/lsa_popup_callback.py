@@ -52,10 +52,10 @@ def _denormalize_data(app, selected_data):
     target_name = sample_dict["output_name"]
 
     y_denorm, p_denorm, x_denorm_text = _get_denormalized_values(normalizer, selected_features, target_name, x, y, p)
+    pred_mae_text = app.application.local_explainer._generate_prediction_info(y_denorm, p_denorm)
 
     window = app.application.lsa_popup.window
-    window.children[1] = html.P(f"groundtruth: {y_denorm}")
-    window.children[2] = html.P(f"prediction: {p_denorm}")
+    window.children[1] = html.P(f"groundtruth: {y_denorm:.5f}{pred_mae_text}")
     window.children[-1] = html.P(f"{x_denorm_text}")
     app.application.lsa_popup.window = window
 
@@ -93,9 +93,9 @@ def _denormalize_features(normalizer, selected_features, x):
 def _set_lsa_popup_content(app, selected_data):
     sample_dict = app.application.interactive_plot.get_clicked_sample_dict(app.application, selected_data)
     x, y, p = sample_dict["x"], sample_dict["y"], sample_dict["p"]
+    pred_mae_text = app.application.local_explainer._generate_prediction_info(y, p)
     window = app.application.lsa_popup.window
-    window.children[1] = html.P(f"groundtruth: {y}")
-    window.children[2] = html.P(f"prediction: {p}")
+    window.children[1] = html.P(f"groundtruth: {y:.5f}{pred_mae_text}")
     features = ", ".join([f"{k}: {v}" for k, v in sample_dict["x"].items()])
     window.children[-1] = html.P(f"{features}")
     app.application.lsa_popup.window = window
