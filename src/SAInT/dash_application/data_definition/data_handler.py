@@ -12,7 +12,7 @@ from SAInT.dash_application.common.data_dialog import ask_for_directory, ask_for
 from SAInT.dash_application.settings.app_settings import load_app_settings_file, save_app_settings_file
 from SAInT.data_settings import load_data_settings_file, save_data_settings_file
 from SAInT.dash_application.common.config_conversion import infer_data_type
-from SAInT.dash_application.components import DashRadioButton, DashChecklist, DashDiv, DashNewline
+from SAInT.dash_application.components import DashRadioButton, DashChecklist, DashDiv, DashNewline, DashGrid
 import importlib.resources as pkg_resources
 from SAInT.templates import __name__ as template_module
 
@@ -324,19 +324,16 @@ class DataHandler:
         if pixel_def is None:
             raise RuntimeError("Pixel Definition error!")
         body = [
-            mode_radio_button.to_html(pixel_def),
-            html.Br(),
-            normalization_radio_button.to_html(pixel_def),
-            html.Br(),
-            DashDiv(
-                id="feature_in_out_checkbox_div",
-                content=[
-                    input_checklist,
-                    output_checklist
-                ],
-                inline=True,
-                gap=pixel_def.margin
-            ).to_html(pixel_def)
+            DashGrid(id="feature_in_out_checkbox_div", item_values=[
+                DashDiv(id="feature_popup_mode_div", content=[mode_radio_button,
+                                                              DashNewline()]),
+                DashDiv(id="feature_popup_norm_div", content=[normalization_radio_button,
+                                                              DashNewline()]),
+                DashDiv(id="feature_in_checkbox_div", content=[input_checklist,
+                                                               DashNewline()]),
+                DashDiv(id="feature_out_checkbox_div", content=[output_checklist,
+                                                                DashNewline()])
+            ], item_widths=[6, 6, 6, 6]).to_html(pixel_def)
         ]
         self.application.feature_selection_popup.set_content(body)
         self.application.feature_selection_popup.open()
