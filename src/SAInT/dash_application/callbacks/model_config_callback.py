@@ -39,9 +39,9 @@ def _get_setting_for_selected_model(app, value):
         setting = ""
     return setting
 
-def _create_add_button(setting):
+def _create_add_button(setting, pixel_def):
     if setting:
-        return layout.create_icon_button(label="Add", class_name="fa fa-plus", id="add_model_button").to_html()
+        return layout.create_icon_button(label="Add", class_name="fa fa-plus", id="add_model_button").to_html(pixel_def)
     return ""
 
 def register_model_configuration_callback(dash_app, app):
@@ -55,6 +55,7 @@ def register_model_configuration_callback(dash_app, app):
         if "models-definition-dropdown.value" in changed_id:
             if app.application.settings is not None:
                 setting = _get_setting_for_selected_model(app, value)
-                add_button = _create_add_button(setting)
+                pixel_def = app.application.pixel_definitions
+                add_button = _create_add_button(setting, pixel_def)
                 return setting, add_button
         return "", ""
