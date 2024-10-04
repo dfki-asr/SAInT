@@ -72,3 +72,4 @@ class SAInTApplication:
         # reset data points
         self.interactive_plot.reset()
         self.local_explainer.reset()
+        self.local_explainer.reset()
