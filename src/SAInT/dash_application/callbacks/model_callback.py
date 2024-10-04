@@ -30,9 +30,10 @@ def register_model_loaded_or_trained_callback(dash_app, app):
         Input("models-configuration-added-models-div", "children"),
         Input("sort_criterion_radiobutton", "value"),
         Input("data_radiobutton", "value"),
+        Input("loaded_data", "children"),
         prevent_initial_call=True
     )
-    def update_models(model_trained, model_loaded, model_added, sort_criterion_radiobutton, data_radiobutton):
+    def update_models(model_trained, model_loaded, model_added, sort_criterion_radiobutton, data_radiobutton, loaded_data):
         _update_interactive_plot_settings(app, sort_criterion_radiobutton, data_radiobutton)
 
         if app.application.trainer is None:
@@ -40,7 +41,7 @@ def register_model_loaded_or_trained_callback(dash_app, app):
 
         model_names_str = "\n".join(app.application.trainer.models.keys())
         if len(app.application.trainer.models) == 0:
-            raise PreventUpdate
+            return ""
         models_info = f"{len(app.application.trainer.models)} Models: {app.application.trainer.model_folder}:\n\n{model_names_str}"
         return models_info
 
