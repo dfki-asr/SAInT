@@ -71,3 +71,4 @@ class SAInTApplication:
         self.lsa_popup.reset()
         # reset data points
         self.interactive_plot.reset()
+        self.local_explainer.reset()

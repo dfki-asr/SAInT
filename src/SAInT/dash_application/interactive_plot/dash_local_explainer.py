@@ -18,6 +18,13 @@ class DashLocalExplainer:
         self.local_lime_explainer = None
         self.local_shap_explainer = None
 
+    def reset(self):
+        self.explain_lime = True
+        self.explain_shap = True
+        self.do_save = True
+        self.local_lime_explainer = None
+        self.local_shap_explainer = None
+
     def _generate_explanation_body(self, sample_dict):
         """
         Generate the HTML body for the explanation popup.
