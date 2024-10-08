@@ -103,7 +103,35 @@ def _get_radiobutton_options(app):
         goodness_of_fit_radiobutton_options = ["False"]
     return sort_criterion_radiobutton_options, goodness_of_fit_radiobutton_options
 
-# TODO Refactor
+def get_model_type_from_name(model_name):
+    if "xgb_" in model_name:
+        return "xgb"
+    if "rf_" in model_name:
+        return "rf"
+    if "mlp_" in model_name:
+        return "mlp"
+    if "res_" in model_name:
+        return "res"
+    if "tabular_learner_" in model_name:
+        return "def"
+
+def get_model_label(model_type, counter_of_type):
+    if model_type not in counter_of_type.keys():
+        counter_of_type[model_type] = 1
+    else:
+        counter_of_type[model_type] += 1
+    model_label = model_type + "_" + str(counter_of_type[model_type])
+    return model_label, counter_of_type
+
+def get_color(color_palette, model_type, assigned_colors):
+    if model_type not in assigned_colors.keys():
+        idx = len(assigned_colors)
+        if idx >= len(color_palette):
+            raise RuntimeError(f"Color palette does not have enough colors available for all {idx} model types")
+        assigned_colors[model_type] = color_palette[idx]
+    color = assigned_colors[model_type]
+    return color, assigned_colors
+
 def _create_error_plot_and_string(app):
     # The implementation for create_error_plot_and_string would go here
     if app.application.trainer is None:
@@ -116,35 +144,6 @@ def _create_error_plot_and_string(app):
         return ""
     metric = app.application.trainer.metric
     figure_folder = app.application.trainer.figure_folder
-
-    def get_model_type_from_name(model_name):
-        if "xgb_" in model_name:
-            return "xgb"
-        if "rf_" in model_name:
-            return "rf"
-        if "mlp_" in model_name:
-            return "mlp"
-        if "res_" in model_name:
-            return "res"
-        if "tabular_learner_" in model_name:
-            return "def"
-
-    def get_model_label(model_type, counter_of_type):
-        if model_type not in counter_of_type.keys():
-            counter_of_type[model_type] = 1
-        else:
-            counter_of_type[model_type] += 1
-        model_label = model_type + "_" + str(counter_of_type[model_type])
-        return model_label, counter_of_type
-
-    def get_color(color_palette, model_type, assigned_colors):
-        if model_type not in assigned_colors.keys():
-            idx = len(assigned_colors)
-            if idx >= len(color_palette):
-                raise RuntimeError(f"Color palette does not have enough colors available for all {idx} model types")
-            assigned_colors[model_type] = color_palette[idx]
-        color = assigned_colors[model_type]
-        return color, assigned_colors
 
     def get_errors_and_models_as_lists(model_names):
         color_palette_list = app.application.color_palette.to_normalized_rgba_list()
