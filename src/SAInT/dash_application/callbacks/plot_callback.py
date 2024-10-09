@@ -24,7 +24,7 @@ def register_plot_callback(dash_app, app):
     )
     def update_plot(n_clicks1, n_clicks2, sort_criterion, dataset_selection, show_datasets_in_plot, goodness_of_fit, show_feature_details, loss_selection):
         _update_interactive_plot_settings(app, sort_criterion, dataset_selection)
-        app.application.show_datasets_in_plot = show_datasets_in_plot if isinstance(show_datasets_in_plot, list) else [show_datasets_in_plot]
+        app.application.show_datasets_in_plot = show_datasets_in_plot if isinstance(show_datasets_in_plot, list) else list(show_datasets_in_plot)
         app.application.interactive_plot.goodness_of_fit = (goodness_of_fit == "True")
         app.application.interactive_plot.show_feature_details = (show_feature_details == "True")
         _update_trainer_metric(app, loss_selection)

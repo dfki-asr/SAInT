@@ -32,7 +32,7 @@ class SAInTApplication:
         )
         self.gsa_figure = None
         self.error_figure = None
-        self.show_datasets_in_plot = ""
+        self.show_datasets_in_plot = ["train"]
         self.interactive_plot = InteractivePlot(application=self)
         self.local_explainer = DashLocalExplainer(application=self)
         self.model_handler = ModelHandler(application=self)
