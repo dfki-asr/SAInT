@@ -217,18 +217,13 @@ class DataLoader():
         final_features = []
         for f in selected_features:
             if f in all_features:
-                # continuous
-                final_features.append(f)
+                final_features.append(f)  # continuous
+            elif do_one_hot_encoding:
+                # Identify all subfeatures of the categorical feature
+                cat_subfeatures = [sf for sf in all_features if sf.startswith(f + "_")]
+                final_features.extend(cat_subfeatures)
             else:
-                # categorial
-                if not do_one_hot_encoding:
-                    print(f"WARNING: Categorial feature {f} might not be supported. Consider setting do_one_hot_encoding=true")
-                else:
-                    for categorified_subfeature in all_features:
-                        # Add categorified subfeatures
-                        if categorified_subfeature.split("_")[0] == f:
-                            print(f"add cat subfeature {categorified_subfeature}")
-                            final_features.append(categorified_subfeature)
+                print(f"WARNING: Categorical feature '{f}' might not be supported. Consider setting do_one_hot_encoding=True")
         return final_features
 
     @property
