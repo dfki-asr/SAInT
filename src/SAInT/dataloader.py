@@ -221,6 +221,8 @@ class DataLoader():
             elif do_one_hot_encoding:
                 # Identify all subfeatures of the categorical feature
                 cat_subfeatures = [sf for sf in all_features if sf.startswith(f + "_")]
+                if len(cat_subfeatures) > 100:
+                    raise RuntimeError(f"Categorical feature '{f}' has more than 100 subfeatures.")
                 final_features.extend(cat_subfeatures)
             else:
                 print(f"WARNING: Categorical feature '{f}' might not be supported. Consider setting do_one_hot_encoding=True")
