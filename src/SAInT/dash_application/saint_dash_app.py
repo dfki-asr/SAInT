@@ -2,7 +2,7 @@
 
 import asyncio
 import webbrowser
-from dash import Dash, html
+from dash import Dash, html, dcc
 import dash_bootstrap_components as dbc
 from SAInT.dash_application.saint_application import SAInTApplication
 from SAInT.dash_application import saint_dash_layout_components as layout
@@ -104,6 +104,8 @@ class MySAInTDashApplication:
             ).to_html(pixel_def),
             html.Div(id="screen-dimensions", style={"display": "none"}),
             self.interval_component.to_html(pixel_def),
+            dcc.ConfirmDialog(id="data-error-dialog", message=""),
+            dcc.ConfirmDialog(id="feature-error-dialog", message=""),
             layout.create_div(id="main-content-div", content=div_content, margin="1%").to_html(pixel_def)
         ], id="app_content")
         self.setup_done = True

@@ -1,5 +1,3 @@
-from dash import html
-import dash_bootstrap_components as dbc
 import os
 import json
 import csv
@@ -151,7 +149,7 @@ class DataHandler:
         """List all CSV files in the specified folder."""
         csv_files = [file for file in os.listdir(folder_path) if file.endswith('.csv')]
         if not csv_files:
-            raise RuntimeError("No CSV files found in the directory.")
+            raise RuntimeError(f"No CSV files found in directory: {folder_path}.")
         return csv_files
 
     def _infer_information_from_csv_data(self, folder_path):
@@ -356,7 +354,14 @@ class DataHandler:
         outputnames_checklist_values = self._get_output_features_from_popup_body(popup_body)
 
         output_names = [str(value) for value in outputnames_checklist_values]
+        if len(output_names) < 1:
+            raise RuntimeError("No output features defined!")
+
         input_names = [str(value) for value in inputnames_checklist_values]
+        if len(input_names) < 1:
+            raise RuntimeError("No input features defined!")
+        if any(name in input_names for name in output_names):
+            raise RuntimeError("An output is also part of the input features!")
 
         data_types = self.all_feature_info["data_types"]
         feature_names = self.all_feature_info["feature_names"]
