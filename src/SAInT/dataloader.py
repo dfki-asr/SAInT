@@ -333,9 +333,7 @@ class DataLoader():
                 # try different encoding
                 csv_df = pd.read_csv(data, sep=delimiter, encoding='ISO-8859-1', **self.kwargs)
 
-            substitutions = {',': '.', 'E-0': 'e-'}
-            csv_df = csv_df.apply(
-                lambda x: x.replace(substitutions, regex=True))
+            csv_df.replace({',': '.', 'E-0': 'e-'}, regex=True, inplace=True)
 
             self.datasets["train"] = Dataset(
                 dataframe=csv_df,
@@ -349,7 +347,7 @@ class DataLoader():
                 self.datasets["train"].convert_to_float64()
             if dtype == np.longdouble:
                 self.datasets["train"].convert_to_float128()
-            if self.verbose is True:
+            if self.verbose:
                 print(f"Loaded data from file: {data}.")
             if do_one_hot_encoding:
                 print("One-hot encode features.")
@@ -357,14 +355,13 @@ class DataLoader():
                     self.train.dataframe)
                 self.datasets["train"].dataframe = csv_onehot_df
 
-
+        # Check for object types
         if self.datasets['train'] is not None:
             if self.datasets['train'].dataframe is not None:
-                dtypes = (self.datasets['train'].dataframe).dtypes
+                dtypes = self.datasets['train'].dataframe.dtypes
                 for label, dtype in dtypes.items():
-                    if "object" in str(dtype):
+                    if dtype == 'object':
                         print(f"CAUTION: {label}: {dtype}")
-
 
         if isinstance(data, pd.DataFrame):
             self.datasets["train"] = Dataset(
