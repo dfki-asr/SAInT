@@ -109,9 +109,9 @@ class DataLoader():
                  kwargs: dict = None):
         super().__init__()
         self.datasets = {
-            "train": copy.deepcopy(train) if train is not None else None,
-            "valid": copy.deepcopy(valid) if valid is not None else None,
-            "test": copy.deepcopy(test) if test is not None else None
+            "train": train if train is not None else None,
+            "valid": valid if valid is not None else None,
+            "test": test if test is not None else None
         }
         self.train_balance_info = train_balance_info
         self.valid_balance_info = valid_balance_info
@@ -461,57 +461,48 @@ class DataLoader():
                                test_frac: float = 0.1) -> None:
         if self.train.dataframe is None:
             raise RuntimeError("Dataframe is None!")
-        dataframe = self.train.dataframe.copy()
-
+        dataframe = self.train.dataframe
         categorical_names = self.train.categorical
         continuous_names = self.train.continuous
+        random_seed = self.train.random_seed
+
+        def create_and_store_subset(df, mode):
+            self.datasets[mode] = self.create_subdataset(
+                dataframe=df.copy(),
+                mode=mode,
+                parent_dataset=self.train,
+                categorical_names=categorical_names,
+                continuous_names=continuous_names
+            )
 
         if valid_frac > 0 or test_frac > 0:
-            random_seed = self.train.random_seed
             valid_test_frac = valid_frac + test_frac
-            valid_test_df = dataframe.sample(frac=valid_test_frac,
-                                             random_state=random_seed)
-            valid_df = valid_test_df.sample(frac=valid_frac / valid_test_frac,
-                                            random_state=random_seed)
-            self.datasets["valid"] = self.create_subdataset(
-                dataframe=valid_df,
-                mode="valid",
-                parent_dataset=self.train,
-                categorical_names=categorical_names,
-                continuous_names=continuous_names)
-            self.datasets["test"] = self.create_subdataset(
-                dataframe=valid_test_df.drop(valid_df.index),
-                mode="test",
-                parent_dataset=self.train,
-                categorical_names=categorical_names,
-                continuous_names=continuous_names)
-            self.datasets["train"] = self.create_subdataset(
-                dataframe=dataframe.drop(valid_test_df.index),
-                mode="train",
-                parent_dataset=self.train,
-                categorical_names=categorical_names,
-                continuous_names=continuous_names)
+            # Split data into validation+test and train sets
+            valid_test_df = dataframe.sample(frac=valid_test_frac, random_state=random_seed)
+            train_df = dataframe.drop(valid_test_df.index)
+
+            # Split valid_test_df into validation and test sets
+            valid_size = int(len(valid_test_df) * (valid_frac / valid_test_frac))
+            valid_df, test_df = valid_test_df.iloc[:valid_size], valid_test_df.iloc[valid_size:]
+
+            # Create and store datasets
+            create_and_store_subset(valid_df, "valid")
+            create_and_store_subset(test_df, "test")
+            create_and_store_subset(train_df, "train")
+
             if self.verbose:
-                print(
-                    f"Split data: {1-valid_test_frac} train, {valid_frac} valid, {test_frac} test."
-                )
+                print(f"Split data: {1 - valid_test_frac:.2f} train, {valid_frac:.2f} valid, {test_frac:.2f} test.")
         else:
+            # No splitting, use full dataset for training
+            create_and_store_subset(dataframe, "train")
             if self.verbose:
                 print("No Data Splitting - Training with full dataset.")
-            self.datasets["train"] = self.create_subdataset(
-                dataframe=dataframe,
-                mode="train",
-                parent_dataset=self.train,
-                categorical_names=categorical_names,
-                continuous_names=continuous_names)
-
         if self.verbose:
-            num_train = self.train.num_samples if self.train is not None else 0
-            num_valid = self.valid.num_samples if self.valid is not None else 0
-            num_test = self.test.num_samples if self.test is not None else 0
-            print(
-                f"Split data into {num_train} train, {num_valid} valid and {num_test} test samples"
-            )
+            num_train = len(self.datasets.get("train", {}).get('dataframe', []))
+            num_valid = len(self.datasets.get("valid", {}).get('dataframe', []))
+            num_test = len(self.datasets.get("test", {}).get('dataframe', []))
+            print(f"Split data into {num_train} train, {num_valid} valid, and {num_test} test samples.")
+
 
     def filter_features(self):
         for mode in self.datasets.keys():
