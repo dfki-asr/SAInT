@@ -1,87 +1,11 @@
 import numpy as np
 from typing import Union
-import copy
 import os
 import pandas as pd
 from fastai.tabular.all import TabularDataLoaders, TabularPandas
 from SAInT.dataset import Dataset
 from SAInT.data_settings import DataSettings
 from SAInT.data_visualizer import DataVisualizer
-
-
-def preprocess_data(dataloaders, valid_frac, test_frac, data_settings, verbose: bool = False):
-    dataloader = None
-    modi = dataloaders.keys()
-
-    if "total" in modi:
-        dataloader = dataloaders["total"]
-        print(f"Split into {valid_frac} validation and {test_frac} test data ...")
-        dataloader.split_train_valid_test(valid_frac=valid_frac,
-                                          test_frac=test_frac)
-    else:
-        print("External validation and test")
-        if "train" not in modi:
-            raise RuntimeError("No train dataset available!")
-        dataloader = dataloaders["train"]
-        categorical_names = dataloader.train.categorical
-        continuous_names = dataloader.train.continuous
-
-        if "valid" in modi:
-            valid_df = dataloaders["valid"].train.dataframe
-            dataloader.datasets["valid"] = dataloader.create_subdataset(
-                dataframe=valid_df,
-                mode="valid",
-                parent_dataset=dataloader.train,
-                categorical_names=categorical_names,
-                continuous_names=continuous_names)
-        else:
-            print("no validation dataset given.")
-            print("Split into validation and test data ...")
-            dataloader.split_train_valid_test(valid_frac=valid_frac,
-                                              test_frac=0.0)
-
-        if "test" in modi:
-            test_df = dataloaders["test"].train.dataframe
-            dataloader.datasets["test"] = dataloader.create_subdataset(
-                dataframe=test_df,
-                mode="test",
-                parent_dataset=dataloader.train,
-                categorical_names=categorical_names,
-                continuous_names=continuous_names)
-        else:
-            print("no test dataset given.")
-
-        train_df = dataloaders["train"].train.dataframe
-        dataloader.datasets["train"] = dataloader.create_subdataset(
-            dataframe=train_df,
-            mode="train",
-            parent_dataset=dataloader.train,
-            categorical_names=categorical_names,
-            continuous_names=continuous_names)
-        dataloader.dataset = None
-
-    dataloader.replace_inf_by_nan()
-    selected_features = dataloader.train.output_names + dataloader.train.categorical + dataloader.train.continuous
-    features_with_nan_columns = dataloader.drop_nan_entries_and_get_nan_columns(selected_features=selected_features, verbose=verbose)
-    dataloader.drop_features(features=features_with_nan_columns)
-
-    if data_settings.normalization != "none":
-        model_folder = f"{data_settings.output_folder}/models/"
-        dataloader.normalize_data(output_folder=model_folder)
-
-    all_features = dataloader.train.continuous
-    for f in all_features:
-        if "valid" in dataloaders.keys():
-            if f not in dataloader.valid.columns:
-                print(f"Need to add {f} to valid ds!")
-                dataloader.valid.dataframe[f] = 0
-        if "test" in dataloaders.keys():
-            if f not in dataloader.test.columns:
-                print(f"Need to add {f} to test ds!")
-                dataloader.test.dataframe[f] = 0
-
-    return dataloader
-
 
 class DataLoader():
     def __init__(self,
@@ -123,57 +47,73 @@ class DataLoader():
         self.kwargs = kwargs if kwargs is not None else {}
         self.categorical_names = categorical_names
         self.continuous_names = continuous_names
-
         if filepath is not None:
             exclude_input_features = exclude_input_features if exclude_input_features is not None else []
             output_names = output_names if output_names is not None else []
             exclude_input_features = list(exclude_input_features)
             output_names = list(output_names)
-
             self.load_data(data=filepath,
                            delimiter=delimiter,
                            output_names=output_names,
                            do_one_hot_encoding=do_one_hot_encoding,
                            dtype=dtype)
+            self._setup_features(include_input_features, exclude_input_features, output_names, augmented_features, do_one_hot_encoding, normalization)
+        self.visualizer = DataVisualizer(self.datasets)
 
-            cat = self.datasets["train"].categorical
-            cont = self.datasets["train"].continuous
-            features = self.datasets["train"].columns
+    def create_and_store_subset(self, df, mode, categorical_names, continuous_names):
+        self.datasets[mode] = self.create_subdataset(
+            dataframe=df,
+            mode=mode,
+            parent_dataset=self.train,
+            categorical_names=categorical_names,
+            continuous_names=continuous_names
+        )
 
-            # Input
-            if include_input_features is not None:
-                final_include_input_features = self.get_final_selected_features(selected_features=include_input_features,
-                                                                           all_features=features,
-                                                                           do_one_hot_encoding=do_one_hot_encoding)
-                if do_one_hot_encoding:
-                    cat, cont = [], features
-                cat = [f for f in cat if f in final_include_input_features]
-                cont = [f for f in cont if f in final_include_input_features]
+    def handle_missing_dataset_features(self, dataset_name):
+        features = self.train.continuous
+        for feature in features:
+            if feature not in self.datasets[dataset_name].columns:
+                print(f"Need to add {feature} to {dataset_name} dataset!")
+                self.datasets[dataset_name].dataframe[feature] = 0
 
-            # Output
-            final_include_output_features = self.get_final_selected_features(selected_features=output_names,
+    def _setup_features(self, include_input_features, exclude_input_features, output_names, augmented_features, do_one_hot_encoding, normalization):
+        cat = self.datasets["train"].categorical
+        cont = self.datasets["train"].continuous
+        features = self.datasets["train"].columns
+
+        # Input
+        if include_input_features is not None:
+            final_include_input_features = self.get_final_selected_features(selected_features=include_input_features,
                                                                         all_features=features,
                                                                         do_one_hot_encoding=do_one_hot_encoding)
-            output_names = final_include_output_features
-            self.train.output_names = output_names
+            if do_one_hot_encoding:
+                cat, cont = [], features
+            cat = [f for f in cat if f in final_include_input_features]
+            cont = [f for f in cont if f in final_include_input_features]
 
-            exclude = output_names + exclude_input_features
-            cat = [f for f in cat if f not in exclude]
-            cont = [f for f in cont if f not in exclude]
-            self.datasets["train"].categorical_names = cat
-            self.datasets["train"].continuous_names = cont
+        # Output
+        final_include_output_features = self.get_final_selected_features(selected_features=output_names,
+                                                                    all_features=features,
+                                                                    do_one_hot_encoding=do_one_hot_encoding)
+        output_names = final_include_output_features
+        self.train.output_names = output_names
 
-            if normalization != "none":
-                features_to_normalize = self.train.input_names + self.train.output_names
-                if self.verbose:
-                    print("features_to_normalize: ", features_to_normalize)
-                if augmented_features is not None:
-                    features_to_normalize = [
-                        feature for feature in features_to_normalize
-                        if feature not in augmented_features
-                    ]
-                self.set_features_to_normalize(features_to_normalize)
-        self.visualizer = DataVisualizer(self.datasets)
+        exclude = output_names + exclude_input_features
+        cat = [f for f in cat if f not in exclude]
+        cont = [f for f in cont if f not in exclude]
+        self.datasets["train"].categorical_names = cat
+        self.datasets["train"].continuous_names = cont
+
+        if normalization != "none":
+            features_to_normalize = self.train.input_names + self.train.output_names
+            if self.verbose:
+                print("features_to_normalize: ", features_to_normalize)
+            if augmented_features is not None:
+                features_to_normalize = [
+                    feature for feature in features_to_normalize
+                    if feature not in augmented_features
+                ]
+            self.set_features_to_normalize(features_to_normalize)
 
     @classmethod
     def from_data_settings(cls, data_settings, dtype=None, procs=None, do_one_hot_encoding=False,
@@ -210,7 +150,53 @@ class DataLoader():
             print(f"Loaded {dataloader.datasets['train'].dataframe.shape[0]} {mode} samples")
             dataloaders[mode] = dataloader
 
-        return preprocess_data(dataloaders, valid_frac, test_frac, data_settings, verbose)
+        def create_and_store_subset(dataloader, mode, categorical_names, continuous_names):
+            df = dataloaders[mode].train.dataframe
+            dataloader.create_and_store_subset(df, mode, categorical_names, continuous_names)
+
+        # Determine which dataloader to use and split train/valid/test if necessary
+        if "total" in dataloaders:
+            dataloader = dataloaders["total"]
+            dataloader.split_train_valid_test(valid_frac=valid_frac, test_frac=test_frac)
+        else:
+            if "train" not in dataloaders:
+                raise RuntimeError("No train dataset available!")
+            dataloader = dataloaders["train"]
+            categorical_names = dataloader.train.categorical
+            continuous_names = dataloader.train.continuous
+
+            # Handle validation dataset
+            if "valid" in dataloaders:
+                create_and_store_subset(dataloader, "valid", categorical_names, continuous_names)
+            else:
+                print("No validation dataset provided.")
+                dataloader.split_train_valid_test(valid_frac=valid_frac, test_frac=0.0)
+            # Handle test dataset
+            if "test" in dataloaders:
+                create_and_store_subset(dataloader, "test", categorical_names, continuous_names)
+            else:
+                print("No test dataset provided.")
+
+            # Ensure train dataset is set
+            create_and_store_subset(dataloader, "train", categorical_names, continuous_names)
+            dataloader.dataset = None
+
+        # Post-processing: Replace infinite values, drop NaN features, and normalize
+        dataloader.replace_inf_by_nan()
+        selected_features = dataloader.train.output_names + dataloader.train.categorical + dataloader.train.continuous
+        nan_columns = dataloader.drop_nan_entries_and_get_nan_columns(selected_features=selected_features, verbose=verbose)
+        dataloader.drop_features(features=nan_columns)
+
+        if data_settings.normalization != "none":
+            model_folder = f"{data_settings.output_folder}/models/"
+            dataloader.normalize_data(output_folder=model_folder)
+
+        # Add missing features to validation and test datasets
+        for mode in ["valid", "test"]:
+            if mode in dataloaders:
+                dataloader.handle_missing_dataset_features(mode)
+
+        return dataloader
 
     @staticmethod
     def get_final_selected_features(selected_features, all_features, do_one_hot_encoding) -> list:
@@ -461,19 +447,11 @@ class DataLoader():
                                test_frac: float = 0.1) -> None:
         if self.train.dataframe is None:
             raise RuntimeError("Dataframe is None!")
+        print(f"Splitting dataset into {valid_frac} validation and {test_frac} test data...")
         dataframe = self.train.dataframe
         categorical_names = self.train.categorical
         continuous_names = self.train.continuous
         random_seed = self.train.random_seed
-
-        def create_and_store_subset(df, mode):
-            self.datasets[mode] = self.create_subdataset(
-                dataframe=df.copy(),
-                mode=mode,
-                parent_dataset=self.train,
-                categorical_names=categorical_names,
-                continuous_names=continuous_names
-            )
 
         if valid_frac > 0 or test_frac > 0:
             valid_test_frac = valid_frac + test_frac
@@ -486,15 +464,15 @@ class DataLoader():
             valid_df, test_df = valid_test_df.iloc[:valid_size], valid_test_df.iloc[valid_size:]
 
             # Create and store datasets
-            create_and_store_subset(valid_df, "valid")
-            create_and_store_subset(test_df, "test")
-            create_and_store_subset(train_df, "train")
+            self.create_and_store_subset(valid_df.copy(), "valid", categorical_names, continuous_names)
+            self.create_and_store_subset(test_df.copy(), "test", categorical_names, continuous_names)
+            self.create_and_store_subset(train_df.copy(), "train", categorical_names, continuous_names)
 
             if self.verbose:
                 print(f"Split data: {1 - valid_test_frac:.2f} train, {valid_frac:.2f} valid, {test_frac:.2f} test.")
         else:
             # No splitting, use full dataset for training
-            create_and_store_subset(dataframe, "train")
+            self.create_and_store_subset(dataframe.copy(), "train", categorical_names, continuous_names)
             if self.verbose:
                 print("No Data Splitting - Training with full dataset.")
         if self.verbose:
