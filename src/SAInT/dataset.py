@@ -240,13 +240,11 @@ class Dataset:
         self.dataframe.reset_index(drop=True, inplace=True)
 
     def onehot_encode(self, inputs: pd.DataFrame) -> pd.DataFrame:
-        """One-hot encode categorical features in the input DataFrame."""
-        inputs_one_hot = inputs.copy()
-        for feature in inputs.columns:
-            if inputs_one_hot[feature].dtype == np.dtype('object'):
-                dummies = pd.get_dummies(inputs_one_hot[feature], prefix=feature)
-                inputs_one_hot = pd.concat([inputs_one_hot, dummies], axis=1)
-                inputs_one_hot.drop([feature], axis=1, inplace=True)
+        """One-hot encode all categorical features."""
+        # Select only object (categorical) columns
+        categorical_cols = inputs.select_dtypes(include=['object']).columns
+        # One-hot encode all categorical columns at once
+        inputs_one_hot = pd.get_dummies(inputs, columns=categorical_cols, drop_first=False)
         return inputs_one_hot
 
     def get_fastai_data(self, batchsize: int = None) -> Union[TabularPandas, TabularDataLoaders]:
