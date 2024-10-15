@@ -117,24 +117,18 @@ class DataLoader():
 
     @classmethod
     def from_data_settings(cls, data_settings, dtype=None, procs=None, do_one_hot_encoding=False,
-                           valid_frac=0.15, test_frac=0.15, verbose=False):
-        files = os.listdir(path=data_settings.data_folder)
-        dataloaders = {}
-        for mode in data_settings.modi:
-            subfiles = [f for f in files if mode in f]
-            if len(subfiles) == 0:
-                print(f"No data found for mode {mode}!")
-                continue
-            elif len(subfiles) == 1:
+                       valid_frac=0.15, test_frac=0.15, verbose=False):
+        def load_dataset_for_mode(mode, subfiles):
+            """Helper to choose and load dataset based on mode and data_settings."""
+            if len(subfiles) == 1:
                 dataset_name = subfiles[0]
+            elif data_settings.experiment_type and data_settings.num_total:
+                dataset_name = f"data_{data_settings.num_total}_{mode}_{data_settings.experiment_type}.csv"
             else:
-                if data_settings.experiment_type != "" and data_settings.num_total is not None:
-                    dataset_name = f"data_{data_settings.num_total}_{mode}_{data_settings.experiment_type}.csv"
-                else:
-                    dataset_name = subfiles[0]
+                dataset_name = subfiles[0]
 
             batchsize = int(list(data_settings.batchsize)[0])
-            dataloader = cls(
+            return cls(
                 filepath=os.path.join(data_settings.data_folder, dataset_name),
                 output_names=data_settings.output_names,
                 include_input_features=data_settings.include_input_features,
@@ -146,52 +140,67 @@ class DataLoader():
                 batchsize=batchsize,
                 procs=procs,
                 dtype=dtype,
-                verbose=data_settings.verbose)
-            print(f"Loaded {dataloader.datasets['train'].dataframe.shape[0]} {mode} samples")
-            dataloaders[mode] = dataloader
+                verbose=data_settings.verbose
+            )
 
         def create_and_store_subset(dataloader, mode, categorical_names, continuous_names):
+            """Helper to create and store subset of data for a specific mode."""
             df = dataloaders[mode].train.dataframe
             dataloader.create_and_store_subset(df, mode, categorical_names, continuous_names)
 
-        # Determine which dataloader to use and split train/valid/test if necessary
+        def handle_missing_data(dataloader, modes, categorical_names, continuous_names):
+            """Handle validation and test datasets if they are missing or need processing."""
+            for mode in modes:
+                if mode in dataloaders:
+                    create_and_store_subset(dataloader, mode, categorical_names, continuous_names)
+                else:
+                    print(f"No {mode} dataset provided.")
+
+        # Main body of from_data_settings
+        files = os.listdir(data_settings.data_folder)
+        dataloaders = {}
+
+        # Load datasets for each mode
+        for mode in data_settings.modi:
+            subfiles = [f for f in files if mode in f]
+            if not subfiles:
+                print(f"No data found for mode {mode}!")
+                continue
+
+            dataloader = load_dataset_for_mode(mode, subfiles)
+            dataloaders[mode] = dataloader
+            print(f"Loaded {dataloader.datasets['train'].dataframe.shape[0]} {mode} samples")
+
+        # Determine primary dataloader and split train/valid/test
         if "total" in dataloaders:
             dataloader = dataloaders["total"]
             dataloader.split_train_valid_test(valid_frac=valid_frac, test_frac=test_frac)
-        else:
-            if "train" not in dataloaders:
-                raise RuntimeError("No train dataset available!")
+        elif "train" in dataloaders:
             dataloader = dataloaders["train"]
             categorical_names = dataloader.train.categorical
             continuous_names = dataloader.train.continuous
 
-            # Handle validation dataset
-            if "valid" in dataloaders:
-                create_and_store_subset(dataloader, "valid", categorical_names, continuous_names)
-            else:
-                print("No validation dataset provided.")
-                dataloader.split_train_valid_test(valid_frac=valid_frac, test_frac=0.0)
-            # Handle test dataset
-            if "test" in dataloaders:
-                create_and_store_subset(dataloader, "test", categorical_names, continuous_names)
-            else:
-                print("No test dataset provided.")
+            # Handle validation and test datasets
+            handle_missing_data(dataloader, ["valid", "test"], categorical_names, continuous_names)
 
-            # Ensure train dataset is set
+            # Ensure train dataset is processed
             create_and_store_subset(dataloader, "train", categorical_names, continuous_names)
             dataloader.dataset = None
+        else:
+            raise RuntimeError("No train dataset available!")
 
-        # Post-processing: Replace infinite values, drop NaN features, and normalize
+        # Post-processing: Handle NaNs, infinite values, and normalization
         dataloader.replace_inf_by_nan()
+
         selected_features = dataloader.train.output_names + dataloader.train.categorical + dataloader.train.continuous
         nan_columns = dataloader.drop_nan_entries_and_get_nan_columns(selected_features=selected_features, verbose=verbose)
         dataloader.drop_features(features=nan_columns)
 
         if data_settings.normalization != "none":
-            model_folder = f"{data_settings.output_folder}/models/"
+            model_folder = os.path.join(data_settings.output_folder, "models")
             dataloader.normalize_data(output_folder=model_folder)
 
-        # Add missing features to validation and test datasets
+        # Handle missing features in validation and test datasets
         for mode in ["valid", "test"]:
             if mode in dataloaders:
                 dataloader.handle_missing_dataset_features(mode)
