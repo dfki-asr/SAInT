@@ -55,6 +55,7 @@ class DataLoader():
             self.load_data(data=filepath,
                            delimiter=delimiter,
                            output_names=output_names,
+                           include_input_features=include_input_features,
                            do_one_hot_encoding=do_one_hot_encoding,
                            dtype=dtype)
             self._setup_features(include_input_features, exclude_input_features, output_names, augmented_features, do_one_hot_encoding, normalization)
@@ -312,24 +313,26 @@ class DataLoader():
     def load_data(self,
                   data: Union[str, pd.DataFrame],
                   output_names: list = None,
+                  include_input_features: list = None,
                   delimiter: str = ",",
                   do_one_hot_encoding: bool = False,
                   dtype=None,
-                  chunksize: int = 50000) -> None:
+                  chunksize: int = 32768) -> None:
         if self.train is not None:
             raise RuntimeError("Dataset is already loaded!")
 
-        def process_chunk(chunk, do_one_hot_encoding):
+        def process_chunk(chunk, encode_features = None):
             """Helper function to process each chunk."""
             # Replace unwanted characters (avoid inplace to save memory)
             chunk = chunk.replace({',': '.', 'E-0': 'e-'}, regex=True)
             # Convert object columns to category to save memory
             obj_cols = chunk.select_dtypes(include=['object']).columns
             chunk[obj_cols] = chunk[obj_cols].astype('category')
-            if do_one_hot_encoding:
-                # One-hot encode categorical columns
-                categorical_cols = chunk.select_dtypes(include=['object']).columns
-                chunk = pd.get_dummies(chunk, columns=categorical_cols, drop_first=False)
+            # Determine which columns to one-hot encode
+            selected = [col for col in obj_cols if encode_features is None or col in include_input_features]
+            # One-hot encode only if there are columns to encode
+            if selected:
+                chunk = pd.get_dummies(chunk, columns=selected, drop_first=False)
             return chunk
 
         if isinstance(data, str):
@@ -339,11 +342,14 @@ class DataLoader():
             except:
                 chunk_iter = pd.read_csv(data, sep=delimiter, encoding='ISO-8859-1', chunksize=chunksize, **self.kwargs)
 
+            encode_features = None
+            if do_one_hot_encoding:
+                encode_features = include_input_features + output_names
             # Initialize an empty dataframe to concatenate chunks
             df_list = []
             for chunk in chunk_iter:
                 # Process each chunk (replace and convert types)
-                processed_chunk = process_chunk(chunk, do_one_hot_encoding)
+                processed_chunk = process_chunk(chunk, encode_features)
                 df_list.append(processed_chunk)
             # Concatenate all processed chunks into a single DataFrame
             csv_df = pd.concat(df_list, ignore_index=True)
