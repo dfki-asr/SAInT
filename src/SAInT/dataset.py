@@ -92,15 +92,28 @@ class Dataset:
 
     def convert_object_or_bool_dtype(self, df: pd.DataFrame) -> pd.DataFrame:
         """Convert object and bool columns to appropriate numeric types."""
-        for label in df.columns:
-            dtype_str = str(df[label].dtype)
-            if "bool" in dtype_str:
-                df[label] = df[label].astype(np.float64)
-            elif "object" in dtype_str:
-                try:
-                    df[label] = df[label].apply(lambda x: float(x.replace(",", ".")) if isinstance(x, str) else float(x)).astype(np.float64)
-                except ValueError:
-                    df[label] = df[label].astype(str)
+        # Prepare the selected labels based on output_names, categorical_names, and continuous_names
+        selected_labels = self.output_names.copy()
+        if self.categorical_names is not None:
+            selected_labels += self.categorical_names
+        if self.continuous_names is not None:
+            selected_labels += self.continuous_names
+        # Add prefixes from selected labels
+        prefixes = [label.split('_')[0] for label in selected_labels]
+        selected_labels += prefixes
+        selected_labels = list(set(selected_labels))  # Remove duplicates
+        # Filter the DataFrame columns to be processed based on selected_labels
+        columns_to_process = [col for col in df.columns if col in selected_labels]
+        # Convert boolean columns to float
+        bool_cols = df[columns_to_process].select_dtypes(include=['bool']).columns
+        df[bool_cols] = df[bool_cols].astype(np.float64)
+        # Convert object columns to numeric, if possible
+        object_cols = df[columns_to_process].select_dtypes(include=['object']).columns
+        if not object_cols.empty:
+            # Vectorized replacement of ',' with '.' in object columns
+            df[object_cols] = df[object_cols].apply(lambda col: col.str.replace(",", ".", regex=False))
+            # Convert object columns to numeric, coercing errors to NaN
+            df[object_cols] = df[object_cols].apply(pd.to_numeric, errors='ignore')
         return df
 
     def _check_for_nan_values(self):
