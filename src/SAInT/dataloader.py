@@ -498,11 +498,12 @@ class DataLoader():
             if self.verbose:
                 print("No Data Splitting - Training with full dataset.")
         if self.verbose:
-            num_train = len(self.datasets.get("train", {}).get('dataframe', []))
-            num_valid = len(self.datasets.get("valid", {}).get('dataframe', []))
-            num_test = len(self.datasets.get("test", {}).get('dataframe', []))
-            print(f"Split data into {num_train} train, {num_valid} valid, and {num_test} test samples.")
-
+            num_train = self.train.num_samples if self.train is not None else 0
+            num_valid = self.valid.num_samples if self.valid is not None else 0
+            num_test = self.test.num_samples if self.test is not None else 0
+            print(
+                f"Split data into {num_train} train, {num_valid} valid and {num_test} test samples"
+            )
 
     def filter_features(self):
         for mode in self.datasets.keys():
