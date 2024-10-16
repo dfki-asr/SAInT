@@ -7,7 +7,7 @@
     Learn more under: https://pyscaffold.org/
 """
 from setuptools import setup
-version = "1.0.5"
+version = "1.0.6"
 
 if __name__ == "__main__":
     try:
