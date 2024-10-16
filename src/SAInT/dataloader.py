@@ -166,7 +166,6 @@ class DataLoader():
             if not subfiles:
                 print(f"No data found for mode {mode}!")
                 continue
-
             dataloader = load_dataset_for_mode(mode, subfiles)
             dataloaders[mode] = dataloader
             print(f"Loaded {dataloader.datasets['train'].dataframe.shape[0]} {mode} samples")
@@ -179,10 +178,8 @@ class DataLoader():
             dataloader = dataloaders["train"]
             categorical_names = dataloader.train.categorical
             continuous_names = dataloader.train.continuous
-
             # Handle validation and test datasets
             handle_missing_data(dataloader, ["valid", "test"], categorical_names, continuous_names)
-
             # Ensure train dataset is processed
             create_and_store_subset(dataloader, "train", categorical_names, continuous_names)
             dataloader.dataset = None
@@ -317,18 +314,39 @@ class DataLoader():
                   output_names: list = None,
                   delimiter: str = ",",
                   do_one_hot_encoding: bool = False,
-                  dtype=None) -> None:
+                  dtype=None,
+                  chunksize: int = 50000) -> None:
         if self.train is not None:
             raise RuntimeError("Dataset is already loaded!")
-        if isinstance(data, str):
-            try:
-                # default encoding: UTF-8
-                csv_df = pd.read_csv(data, sep=delimiter, encoding='utf-8', **self.kwargs)
-            except:
-                # try different encoding
-                csv_df = pd.read_csv(data, sep=delimiter, encoding='ISO-8859-1', **self.kwargs)
 
-            csv_df.replace({',': '.', 'E-0': 'e-'}, regex=True, inplace=True)
+        def process_chunk(chunk, do_one_hot_encoding):
+            """Helper function to process each chunk."""
+            # Replace unwanted characters (avoid inplace to save memory)
+            chunk = chunk.replace({',': '.', 'E-0': 'e-'}, regex=True)
+            # Convert object columns to category to save memory
+            obj_cols = chunk.select_dtypes(include=['object']).columns
+            chunk[obj_cols] = chunk[obj_cols].astype('category')
+            if do_one_hot_encoding:
+                # One-hot encode categorical columns
+                categorical_cols = chunk.select_dtypes(include=['object']).columns
+                chunk = pd.get_dummies(chunk, columns=categorical_cols, drop_first=False)
+            return chunk
+
+        if isinstance(data, str):
+            # Reading in chunks to minimize memory footprint
+            try:
+                chunk_iter = pd.read_csv(data, sep=delimiter, encoding='utf-8', chunksize=chunksize, **self.kwargs)
+            except:
+                chunk_iter = pd.read_csv(data, sep=delimiter, encoding='ISO-8859-1', chunksize=chunksize, **self.kwargs)
+
+            # Initialize an empty dataframe to concatenate chunks
+            df_list = []
+            for chunk in chunk_iter:
+                # Process each chunk (replace and convert types)
+                processed_chunk = process_chunk(chunk, do_one_hot_encoding)
+                df_list.append(processed_chunk)
+            # Concatenate all processed chunks into a single DataFrame
+            csv_df = pd.concat(df_list, ignore_index=True)
 
             self.datasets["train"] = Dataset(
                 dataframe=csv_df,
@@ -344,11 +362,6 @@ class DataLoader():
                 self.datasets["train"].convert_to_float128()
             if self.verbose:
                 print(f"Loaded data from file: {data}.")
-            if do_one_hot_encoding:
-                print("One-hot encode features.")
-                csv_onehot_df = self.train.onehot_encode(
-                    self.train.dataframe)
-                self.datasets["train"].dataframe = csv_onehot_df
 
         # Check for object types
         if self.datasets['train'] is not None:
