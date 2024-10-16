@@ -32,7 +32,7 @@ class Dataset:
     def __init__(self, dataframe: pd.DataFrame, mode: str = "", output_names: List[str] = None,
                  normalization_values = None, features_to_normalize: List[str] = None, normalization: str = "none",
                  verbose: bool = False, random_seed: int = 123456, is_normalized: bool = False,
-                 categorical_names: List[str] = None, continuous_names: List[str] = None, procs: List = None):
+                 categorical_names: List[str] = None, continuous_names: List[str] = None, procs: List = None, dropna: bool = True):
         """
         Initialize the Dataset object.
 
@@ -72,8 +72,8 @@ class Dataset:
         for f in self.output_names:
             if f not in dataframe.columns:
                 raise ValueError(f"Output feature {f} is not part of {dataframe.columns}")
-
-        self._check_for_nan_values()
+        if dropna:
+            self._check_for_nan_values()
 
     def convert_to_float(self, dtype=np.float64) -> pd.DataFrame:
         """Convert all columns in the DataFrame to a specified float type."""

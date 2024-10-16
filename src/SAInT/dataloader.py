@@ -308,7 +308,7 @@ class DataLoader():
             is_normalized=parent_dataset.is_normalized,
             categorical_names=categorical_names,
             continuous_names=continuous_names,
-            procs=parent_dataset.procs)
+            procs=parent_dataset.procs, dropna=False)
 
     def load_data(self,
                   data: Union[str, pd.DataFrame],
@@ -361,7 +361,7 @@ class DataLoader():
                 output_names=output_names,
                 categorical_names=self.categorical_names,
                 continuous_names=self.continuous_names,
-                procs=self.procs)
+                procs=self.procs, dropna=False)
             if dtype == np.float64:
                 self.datasets["train"].convert_to_float64()
             if dtype == np.longdouble:
@@ -384,7 +384,7 @@ class DataLoader():
                 output_names=output_names,
                 categorical_names=self.categorical_names,
                 continuous_names=self.continuous_names,
-                procs=self.procs)
+                procs=self.procs, dropna=False)
             if dtype == np.float64:
                 self.datasets["train"].convert_to_float64()
             if dtype == np.longdouble:
